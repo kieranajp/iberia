@@ -37,7 +37,10 @@ for (const region of written) {
   if (!Number.isInteger(region.rating) || region.rating < 1 || region.rating > 5) {
     problems.push(`${where}: rating must be a whole number from 1 to 5, got ${region.rating}`);
   }
-  for (const field of ['meat', 'veg', 'verdict', 'icons']) {
+  if (!Number.isInteger(region.pesc) || region.pesc < 1 || region.pesc > 5) {
+    problems.push(`${where}: pesc must be a whole number from 1 to 5, got ${region.pesc}`);
+  }
+  for (const field of ['meat', 'veg', 'verdict', 'icons', 'fish']) {
     if (!region[field]) problems.push(`${where}: needs a ${field}`);
   }
 }
@@ -67,6 +70,8 @@ for (const shape of shapes.features) {
       name: name.trim(),
       code,
       rating: region.rating,
+      pesc: region.pesc,
+      fish: region.fish,
       icons: region.icons,
       meat: region.meat,
       veg: region.veg,

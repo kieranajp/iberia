@@ -26,8 +26,20 @@ const read = async (name) => JSON.parse(await readFile(new URL(`public/data/${na
 const WEIGHTS = { food: 0.40, wine: 0.30, drizzle: 0.30 };
 const BRIT_PENALTY = 0.18; // per point of the worst resort in the region, out of 5
 
-/** Fish on the menu is fine, so a fish-forward region is not the problem pork is. */
-const FISH = /bacalhau|pescaíto|sardinha|choco|anchoa|pulpo|marisco|lapas|cataplana|peixe|fish|cod|txakol|kokotxas|pil-pil/i;
+/**
+ * How the food question is asked.
+ *
+ * The vegetarian rating leads, because it measures whether a kitchen can cook without
+ * meat at all. White fish and chicken are the fallback: they lift a region by at most
+ * one band and can never rescue one. A place that answers "something vegetarian?" with
+ * a plate of jamón is not going to be good at chicken either — so the pork belt stays
+ * ruled out on the vegetarian rating, whatever its fish score says.
+ *
+ *   --diet veg   score on the vegetarian rating alone
+ */
+const STRICT = process.argv.includes('--diet') && process.argv[process.argv.indexOf('--diet') + 1] === 'veg';
+const FALLBACK_LIFT = 0.5; // half the gap to the fish-and-chicken rating...
+const FALLBACK_CAP = 1; // ...and never more than one band
 
 const [food, wine, rain, resorts, provinces] = await Promise.all(
   ['food-culture', 'wine-regions', 'rainfall', 'resorts', 'tourism'].map(read),
@@ -73,7 +85,7 @@ const regions = provinces.features.map((feature) => {
   const { name, code } = feature.properties;
   const parent = regionFood.get(code.slice(0, 4));
   if (!parent) return null;
-  const { rating, meat, veg, verdict, icons } = parent;
+  const { rating, pesc, fish, meat, veg, verdict, icons } = parent;
   const region = parent.name;
   const geometry = feature.geometry;
 
@@ -110,7 +122,12 @@ const regions = provinces.features.map((feature) => {
     code,
     region,
     rating,
-    fishy: FISH.test(meat),
+    pesc,
+    appetite: STRICT
+      ? rating
+      : rating + Math.min(FALLBACK_CAP, Math.max(0, (pesc - rating) * FALLBACK_LIFT)),
+    lift: STRICT ? 0 : Math.min(FALLBACK_CAP, Math.max(0, (pesc - rating) * FALLBACK_LIFT)),
+    fish,
     meat,
     veg,
     verdict,
@@ -153,8 +170,7 @@ const driest = Math.min(...spanish.map((r) => r.drizzle));
    food. Castilla y León has nine denominations and real weather: on those questions it
    belongs on the map like anywhere else, and is only absent from the final score. */
 for (const region of spanish) {
-  // Vegetarian rating carries it, and a fish-forward region gets half a band back.
-  const food100 = ((region.rating + (region.fishy ? 0.5 : 0) - 1) / 4) * 100;
+  const food100 = ((region.appetite - 1) / 4) * 100;
   const wine100 = (region.wines / mostWine) * 100;
   const drizzle100 = ((wettest - region.drizzle) / (wettest - driest)) * 100;
   const brits100 = ((5 - region.brits) / 5) * 100;
@@ -213,6 +229,7 @@ await mkdir(new URL('.cache/', root), { recursive: true });
 await writeFile(
   out,
   JSON.stringify({
+    diet: STRICT ? 'veg' : 'fallback',
     weights: WEIGHTS,
     britPenalty: BRIT_PENALTY,
     /* Whatever is not ranked and not ruled out is drawn flat, so an exclusion reads as
@@ -239,7 +256,10 @@ await writeFile(
   }),
 );
 
-console.log(`Scored ${usable.length} regions. Weights: ${JSON.stringify(WEIGHTS)}`);
+console.log(
+  `Scored ${usable.length} provinces, ${STRICT ? 'strictly vegetarian' : 'with fish and chicken as a fallback'}. ` +
+    `Weights: ${JSON.stringify(WEIGHTS)}`,
+);
 console.log('\nTop 8:');
 for (const [i, r] of usable.slice(0, 8).entries()) {
   console.log(

@@ -48,8 +48,10 @@
         <h3>The food</h3>
         <p>
           Province by province, what each one actually cooks — the dishes, not the restaurant
-          listings — rated 1 to 5 for how hard you'd find it without meat. There is no survey
-          that answers this. The obvious substitute, counting vegetarian restaurants, turns out
+          listings — rated twice: once for how hard you'd find it without meat at all, and once
+          for how well it does white fish and chicken. The first rating leads and decides who is
+          ruled out; the second can lift a province one band and no further. There is no survey
+          that answers either. The obvious substitute, counting vegetarian restaurants, turns out
           to measure where map-makers live rather than where you can eat.
         </p>
       </div>
@@ -75,6 +77,12 @@
       suckling pig, Extremadura exists for the acorn-fed pig, Asturias puts pork in the bean stew,
       and central Portugal roasts its own piglet for Bairrada. The Mediterranean arc is a
       different country — rice, aubergines, artichokes, chickpeas.
+    </p>
+    <p class="lede">
+      White fish and chicken widen the field, so a fish-forward province is scored more kindly
+      here than a strict reading would allow. <strong>They are a fallback, not a rescue:</strong>
+      they lift a province by at most one band, and never save one. Somewhere that answers
+      "something vegetarian?" with a plate of jamón is not going to be good at chicken either.
     </p>
     <div class="map-wrap">
       <div class="map-frame"><svg class="map" data-svg role="img" aria-label="Iberian provinces shaded by how easy they are without meat"></svg></div>
@@ -371,7 +379,7 @@
 
   const lensLine = (region, lens) =>
     ({
-      food: `${region.parts.food} / 100 for eating without meat${region.fishy ? ', and fish-forward' : ''}`,
+      food: `${region.parts.food} / 100${region.lift ? ` — ${region.rating}/5 as a vegetarian, lifted by the fish` : ''}`,
       wine: `${region.wines} denomination${region.wines === 1 ? '' : 's'}`,
       drizzle: `${region.drizzle} wet days a year · ${region.downpours} downpours`,
       brits: region.brits
@@ -390,7 +398,7 @@
       <dl>
         ${only ? `<dt>Here</dt><dd>${line}</dd>` : `
           <dt>Score</dt><dd>${region.score} / 100${region.britFactor < 1 ? ` <span style="color:var(--muted)">(${region.merit} before the discount)</span>` : ''}</dd>
-          <dt>Food</dt><dd>${region.parts.food}${region.fishy ? ' · fish-forward' : ''}</dd>
+          <dt>Food</dt><dd>${region.parts.food}${region.lift ? ` · ${region.rating}/5 as a vegetarian` : ''}</dd>
           <dt>Wine</dt><dd>${region.wines} denomination${region.wines === 1 ? '' : 's'}</dd>
           <dt>Rain</dt><dd>${region.drizzle} wet days · ${region.downpours} downpours</dd>
           <dt>Brits</dt><dd>${region.brits ? `${region.brits} / 5${region.worst.length ? ` — ${region.worst.join(', ')}` : ''}` : 'none worth noting'}</dd>`}
@@ -548,6 +556,7 @@
         <h3>${region.name}</h3>
         <p>${region.verdict}</p>
         <p class="muted"><b>Ask for</b> ${region.veg}</p>
+        ${region.fish ? `<p class="muted"><b>Or off the boat</b> ${region.fish}</p>` : ''}
         <p class="muted"><b>Drink</b> ${region.wineNames.length ? region.wineNames.join(', ') : 'whatever the next region sends over'}</p>
         <div class="stats">
           <span class="chip"><b>${region.drizzle}</b> wet days</span>
