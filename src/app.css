@@ -1,0 +1,39 @@
+:root {
+  --bg: #14161a;
+  --panel: #1b1e24;
+  --fg: #e8e6e1;
+  --muted: #9aa0a6;
+  --line: #2c3038;
+  --accent: #7aa2f7;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #app {
+  margin: 0;
+  height: 100%;
+  font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.maplibregl-popup-content {
+  padding: 10px 12px 12px;
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--fg);
+  font: 13px/1.45 system-ui, sans-serif;
+  box-shadow: 0 6px 24px rgb(0 0 0 / 0.45);
+}
+
+.maplibregl-popup-anchor-top .maplibregl-popup-tip { border-bottom-color: var(--panel); }
+.maplibregl-popup-anchor-bottom .maplibregl-popup-tip { border-top-color: var(--panel); }
+.maplibregl-popup-anchor-left .maplibregl-popup-tip { border-right-color: var(--panel); }
+.maplibregl-popup-anchor-right .maplibregl-popup-tip { border-left-color: var(--panel); }
+
+.maplibregl-popup-close-button {
+  padding: 0 6px;
+  color: var(--muted);
+  font-size: 15px;
+}
