@@ -25,7 +25,10 @@ dist-ssr
 
 .cache/
 
-# Generated data. Rebuild with npm run data:rainfall / data:tourism.
-# resorts.geojson is hand-written source and stays in the repo.
-/public/data/rainfall.geojson
-/public/data/tourism.geojson
+# Build output. Every dataset is generated: rebuild with npm run data:*,
+# or fetch the last snapshots with npm run data:restore.
+# Authored source lives in data/, which is committed.
+/public/data/
+
+# Release artefacts
+/.release/

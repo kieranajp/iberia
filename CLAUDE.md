@@ -4,11 +4,19 @@ A static map of the Iberian peninsula that grows one data layer at a time.
 Svelte 5 + Vite + TypeScript, MapLibre GL through `svelte-maplibre-gl`. No backend,
 no API keys.
 
+## Project environment
+
+- Web-only Svelte 5 application, built by Vite 8 with TypeScript 6 and npm. It is not
+  React Native and has no native iOS or Android projects.
+- `npm run dev` serves on Vite's default port 5173; `npm run preview` uses 4173.
+- The QA path is `npm run typecheck`, `npm run check`, then `npm run build`. There is no
+  separate unit or end-to-end test runner.
+
 ## Adding a layer — the happy path
 
 1. **Get the data as GeoJSON** (WGS84 lon/lat) and save it to `public/data/<id>.geojson`.
    If it comes from an API or a raw download, write `scripts/build-<id>.mjs` that produces
-   the file, add a `data:<id>` entry to `package.json`, and commit both the script and its
+   the file and add a `data:<id>` entry to `package.json`. Commit the script, not the generated
    output. `scripts/build-rainfall.mjs` is the worked example: batching, caching, provenance.
 2. **`npm run new-layer -- <id>`** — copies the template to `src/layers/<id>/layer.ts`.
 3. **Edit that one file.** Set the name, group, `render.type`, colour stops and popup fields.
@@ -23,21 +31,36 @@ no API keys.
 There is no registry. The folder is the registration: `src/lib/layers.ts` globs
 `src/layers/*/layer.ts` and validates each one, skipping folders that start with `_`.
 
-Types cover the shape of a layer; `npm run check` covers everything types cannot see,
-which is all of the data. Both, every time.
+Types cover the shape of a layer; `npm run check` covers what types cannot see: the data,
+and the MapLibre paint the layer generates. Both, every time.
+
+A layer that MapLibre rejects draws nothing while looking perfectly healthy — the source
+loads, the legend renders, the checkbox works. `check` validates the generated paint
+against the style spec to catch that before the browser does, and the map shows any
+runtime error in a banner rather than swallowing it.
 
 ## Rules
 
 - **Every numeric layer carries `benchmarks`.** A rainfall figure in millimetres means
-  nothing on its own; "1.4× Ireland" means something. Two or three familiar places,
+  nothing on its own; "1.4× Derry" means something. Two to four familiar places,
   in the same unit as the colour scale. For layers scored on a made-up scale, label the
   bands in words through `colour.format` instead — `light`, `heavy`, `saturated` —
   so the legend reads as English rather than as numbers.
 - Data files go in `public/data/`. Never paste large GeoJSON into a `.ts` file.
-- **Generated data is gitignored by name; hand-written data is committed.** A file a script
-  can rebuild does not belong in the history. `public/data/resorts.geojson` has no script
-  behind it, so it is source and stays. Add new generated files to `.gitignore` by name
-  rather than by pattern, so hand-written data is never silently dropped.
+- **`public/data/` is build output and is not in git. Every dataset has a build script.**
+  Even the hand-compiled ones: the ratings in `data/resorts.json` are the source, one place
+  per line so a diff reads like an argument about Benidorm, and `npm run data:resorts`
+  wraps them in GeoJSON. Never hand-edit anything under `public/data/`; it will be
+  overwritten and it is not backed up by the repo.
+- Authored data goes in `data/` and is committed. Derived data goes in `public/data/` and
+  is released. There is no third category.
+- `npm run release` is where the datasets are kept: it checks, builds, and publishes both
+  the site and the data as archives on a versioned GitHub release. A new machine runs
+  `npm run data:restore` instead of spending an hour inside Open-Meteo's rate limits.
+- **Publishing a release deploys it.** `deploy.yml` unpacks the site archive from the
+  release into an nginx image and runs `helm upgrade` — it does not rebuild. Rebuilding
+  would have to fetch the datasets again and could ship something other than what was
+  released. Chart in `charts/iberia`; the image is static files and nothing else.
 - **Pick one lane per layer and say which.** A layer that covers the Algarve but stops at
   the Spanish border for its neighbour is worse than either choice made consistently: a
   blank Portugal reads as "no tourists", not "no data". Eurostat covers both countries
@@ -47,9 +70,9 @@ which is all of the data. Both, every time.
 - Keep a data file under about 5 MB. Coarsen the grid or simplify geometry instead.
 - Reuse an existing group before inventing one: Climate, Landscape, Food & drink,
   Culture, Practical, Who goes where.
-- Several layers may share one data file. `public/data/resorts.geojson` carries a column
-  per nationality, and each layer draws its own with `filter` and a `size` scale. Prefer
-  that to four near-identical files.
+- Several layers may share one data file. `resorts.geojson` carries a column per
+  nationality, and each layer draws its own with `filter` and a `size` scale. Prefer that
+  to four near-identical files.
 - Hand-compiled data is allowed where no survey exists, but say so in the layer's
   `attribution` and in the file's `metadata`, and keep the ratings on a stated scale.
 - Adding a layer must not require editing `src/lib/` or `src/components/`. If it does,
@@ -67,6 +90,10 @@ which is all of the data. Both, every time.
 | `src/layers/_template/layer.ts` | The contract as a worked example. |
 | `public/data/<id>.geojson` | That layer's data. |
 | `scripts/build-<id>.mjs` | How that data was produced, so it can be rebuilt. |
+| `data/<id>.json` | Hand-compiled source, where a layer's data is a judgement. |
+| `scripts/release.mjs` | Checks, builds, and publishes the site and the datasets. |
+| `charts/iberia/` | Helm chart: deployment, service, Traefik IngressRoute. |
+| `.github/workflows/` | CI on push; deploy on a published release. |
 | `src/lib/layers.ts` | Finds and validates layers. |
 | `src/lib/paint.ts` | Turns `render` into MapLibre paint properties and legends. |
 | `src/lib/schema.ts` | Runtime validation. Shared by the browser and `npm run check`. |

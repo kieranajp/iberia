@@ -6,6 +6,8 @@
 import { readdir, readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { validateLayer } from '../src/lib/schema.ts';
+import { buildPaint, buildLayout } from '../src/lib/paint.ts';
+import { validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
 
 const layersDir = new URL('../src/layers/', import.meta.url);
 const publicDir = new URL('../public/', import.meta.url);
@@ -32,6 +34,7 @@ for (const folder of folders) {
   }
 
   problems.push(...validateLayer(def, path));
+  problems.push(...validatePaint(def, path));
   if (def?.id && def.id !== folder) {
     problems.push(`${path}: id "${def.id}" does not match folder "${folder}"`);
   }
@@ -86,3 +89,25 @@ if (problems.length) {
 }
 
 console.log(`\n${folders.length} layer(s) OK`);
+
+/**
+ * Builds the layer's MapLibre paint and layout and checks them against the style
+ * spec. Catches what neither types nor data can: expressions that are the right
+ * shape but that MapLibre refuses at runtime, where the layer silently draws nothing.
+ */
+function validatePaint(def, path) {
+  if (!def?.render?.type || def.component) return [];
+
+  const layout = buildLayout(def.render, 'icon');
+  const style = {
+    version: 8,
+    sources: { s: { type: 'geojson', data: { type: 'FeatureCollection', features: [] } } },
+    layers: [
+      { id: 'l', type: def.render.type, source: 's', paint: buildPaint(def.render), ...(layout ? { layout } : {}) },
+    ],
+  };
+
+  return validateStyleMin(style)
+    .filter((error) => !/icon-image/.test(error.message)) // the image is added at runtime
+    .map((error) => `${path}: ${error.message.replace('layers[0].', '')}`);
+}

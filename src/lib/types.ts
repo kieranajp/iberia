@@ -95,12 +95,19 @@ export interface PopupField {
   key: string;
   label?: string;
   format?: FeatureValueFormatter;
+  /** Draw the value large and across the popup, with no label. For a row of emoji. */
+  big?: boolean;
 }
 
 export interface Popup {
   /** Property to use as the heading. */
   title?: string;
   fields?: PopupField[];
+  /**
+   * 'click' (default) pins a popup until dismissed. 'hover' follows the pointer and
+   * clears on leaving — better for reading across an area, useless on a phone.
+   */
+  trigger?: 'click' | 'hover';
 }
 
 interface LayerBase {
@@ -118,7 +125,7 @@ interface LayerBase {
   attribution?: string;
   /** Printed after the numbers on the legend, e.g. 'mm/yr'. */
   unit?: string;
-  /** Two or three familiar places. Wanted on every numeric layer. */
+  /** Two to four familiar places. Wanted on every numeric layer. */
   benchmarks?: Benchmark[];
 }
 

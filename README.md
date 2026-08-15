@@ -18,16 +18,20 @@ here: switch all four on and the country divides itself up in front of you.
 
 | Layer | What it shows | Source |
 | --- | --- | --- |
-| Yearly rainfall | Mean annual precipitation, 2015–2024 | ERA5 via Open-Meteo, 0.5° grid |
+| Yearly rainfall | Mean annual precipitation, 2015–2024 | Open-Meteo Best Match historical weather, 0.5° grid |
+| Rainy days | Mean days/year with at least 1 mm, 2015–2024 | Same Open-Meteo rainfall grid |
+| Very heavy rain | Mean days/year with at least 20 mm, 2015–2024 | Same Open-Meteo rainfall grid |
 | Tourist pressure | How outnumbered residents are | Eurostat, NUTS 3 regions |
 | Tourist volume | How many tourists, in total | Eurostat, NUTS 3 regions |
-| Who goes where | 62 places rated 0–5 for British, German, French and Spanish crowds | Hand-compiled |
+| Who goes where | 62 places rated 0–5 for British, German, French and Spanish crowds | Hand-compiled, `data/resorts.json` |
+| Wine regions | The 2 DOCa and 70 DO wine denominations | MAPA registry + hand-compiled, `data/wine-regions.json` |
+| Eating without meat | How hard a vegetarian will find each region, 1–5 | Hand-compiled, `data/food-culture.json` |
 
 Pressure and volume read the same file and disagree usefully: Valencia is tenth by volume
 and thirty-first by pressure, because dividing by 2.6 million residents hides a lot.
 
 Numeric layers carry benchmarks — familiar places marked on the legend — so 1,600 mm reads
-as "1.3× Ireland" and 114 nights per resident reads as "Lanzarote".
+as "about the same as Keswick" and 114 nights per resident reads as "Lanzarote".
 
 ## Running it
 
@@ -36,16 +40,59 @@ npm install
 npm run dev
 ```
 
-The generated datasets are not in the repo. Build them once:
+The datasets are not in the repo — they are build output, shipped on releases. On a fresh
+clone, pull the last ones:
 
 ```sh
-npm run data:tourism     # a minute
-npm run data:rainfall    # an hour or more: Open-Meteo rate-limits hard, and the
-                         # script waits for each window rather than giving up
+npm run data:restore
 ```
 
-Both cache every response, so a second run costs nothing. Until they have run, those layers
-show a red note on the map instead of silently drawing nothing.
+Or rebuild them from source:
+
+```sh
+npm run data               # all datasets
+npm run data:resorts       # instant
+npm run data:wine-regions  # instant
+npm run data:food-culture  # instant
+npm run data:tourism       # a minute
+npm run data:rainfall      # an hour or more: Open-Meteo rate-limits hard, and the
+                           # script waits out each window rather than giving up
+```
+
+Every response is cached, so a second run costs nothing. Until the data is there, those
+layers show a red note on the map rather than silently drawing nothing.
+
+## Releasing
+
+```sh
+npm run release              # check, build, publish
+npm run release -- --dry-run # everything but the publish
+```
+
+That refuses to ship unless the layers typecheck and every layer's data is present and
+matches it. It publishes two archives against the version in `package.json`:
+
+| Archive | What for |
+| --- | --- |
+| `iberia-site-<version>.tar.gz` | The built site, data included. Unpack it on any host. |
+| `iberia-data-<version>.tar.gz` | The datasets alone. What `data:restore` pulls. |
+
+So the release is both the deployable and the backup: hosting it and setting up a new
+machine are the same artefact seen from two ends.
+
+Publishing a release also deploys it. `.github/workflows/deploy.yml` takes the site
+archive **from the release** rather than rebuilding — the datasets are not in git, so a
+rebuild could differ from what was tested — wraps it in nginx, pushes to ghcr.io and runs
+`helm upgrade` against the homelab over Tailscale. The chart is in `charts/iberia`.
+
+| | |
+| --- | --- |
+| Image | `ghcr.io/kieranajp/iberia:<tag>` |
+| Chart | `charts/iberia`, namespace `apps` |
+| Host | `iberia.kieranajp.uk` (Traefik IngressRoute, Let's Encrypt) |
+
+Deploying needs `TS_OAUTH_CLIENT_ID`, `TS_OAUTH_CLIENT_SECRET` and `KUBECONFIG` as repo
+secrets, and a `ghcr-secret` image pull secret in the namespace.
 
 ## Adding a layer
 
@@ -61,8 +108,9 @@ editor lists what is allowed and refuses what is not. `src/lib/types.ts` is the 
 `src/layers/_template/layer.ts` is the worked example, and `CLAUDE.md` is the house style.
 
 The two checks cover different halves. `typecheck` catches the shape of a layer;
-`check` catches everything types cannot see — missing files, malformed GeoJSON, and
-properties the layer refers to but the data does not have.
+`check` catches everything types cannot see — missing files, malformed GeoJSON, properties
+the layer refers to but the data does not have, and paint that MapLibre will reject at
+runtime, which otherwise shows up as a layer that draws nothing at all.
 
 ## Stack
 
@@ -71,11 +119,14 @@ from OpenFreeMap. No backend, no API keys, nothing to sign up for.
 
 ## On the data
 
-Everything is sourced or admitted. The rainfall and tourism layers come from ERA5 and
-Eurostat and can be rebuilt from the scripts that made them. The nationality ratings are
+Everything is sourced or admitted. The rainfall and tourism layers come from Open-Meteo
+and Eurostat and can be rebuilt from the scripts that made them. The nationality ratings are
 mine, hand-compiled, and the file says so — they are a judgement about the character of a
 place, not a statistic. Where a source stops at the Spanish border, the layer says so
 rather than leaving Portugal blank, which would read as "no tourists" instead of "no data".
+The wine regions layer takes its list of names, categories and comunidades from MAPA's
+official registry, but plots one representative town per denomination rather than its
+real boundary — MAPA's own shapefile is captcha-gated and there is no free alternative.
 
 ## Commands
 
@@ -86,5 +137,6 @@ rather than leaving Portugal blank, which would read as "no tourists" instead of
 | `npm run typecheck` | Checks layers against the `Layer` interface |
 | `npm run check` | Validates layers against their data |
 | `npm run new-layer -- <id>` | Scaffolds a layer |
-| `npm run data:rainfall` | Rebuilds the rainfall grid |
-| `npm run data:tourism` | Rebuilds the tourism figures |
+| `npm run data` | Rebuilds every dataset |
+| `npm run data:restore` | Pulls the datasets from the latest release |
+| `npm run release` | Checks, builds and publishes the site and the data, which deploys it |

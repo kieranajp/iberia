@@ -1,0 +1,5 @@
+apiVersion: v2
+name: iberia
+version: 0.1.0
+appVersion: "latest"
+description: A static map of the Iberian peninsula

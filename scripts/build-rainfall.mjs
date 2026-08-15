@@ -1,8 +1,12 @@
 /**
- * Builds public/data/rainfall.geojson: mean annual precipitation over Iberia.
+ * Builds public/data/rainfall.geojson: annual precipitation and rain-day
+ * frequency/intensity measures over Iberia.
  *
- * Source: ERA5 reanalysis via the Open-Meteo archive API (free, no key).
- * Daily totals for 2015-2024 are summed per grid cell and divided by ten.
+ * Source: Open-Meteo Historical Weather API, using its Best Match model (free, no key).
+ * Daily totals for 2015-2024 are summed per grid cell and divided by ten. Days
+ * with at least 1, 10 and 20 mm are counted and divided by ten, matching the
+ * standard rain-day, heavy-rain and very-heavy-rain thresholds. The wettest
+ * single day in the period is retained for context.
  * Sea cells are dropped by their reported elevation of exactly 0 m.
  *
  *   node scripts/build-rainfall.mjs [--step 0.5] [--from 2015] [--to 2024]
@@ -42,9 +46,12 @@ function grid() {
   return points;
 }
 
+/** Open-Meteo returns a bare object, not a list, when a batch holds a single point. */
+const asList = (json) => (Array.isArray(json) ? json : [json]);
+
 async function fetchBatch(points, index) {
   const file = new URL(`batch-${STEP}-${FROM}-${TO}-${index}.json`, CACHE);
-  if (existsSync(file)) return JSON.parse(await readFile(file, 'utf8'));
+  if (existsSync(file)) return asList(JSON.parse(await readFile(file, 'utf8')));
 
   const url =
     'https://archive-api.open-meteo.com/v1/archive' +
@@ -61,7 +68,7 @@ async function fetchBatch(points, index) {
       if (res.ok) {
         const json = await res.json();
         await writeFile(file, JSON.stringify(json));
-        return json;
+        return asList(json);
       }
       if (res.status === 429) {
         const { reason = '' } = await res.json().catch(() => ({}));
@@ -81,12 +88,28 @@ async function fetchBatch(points, index) {
   throw new Error(`batch ${index} failed after 6 attempts — re-run to resume from the cache`);
 }
 
-function cell(point, mm, elevation) {
+function downpourBand(days) {
+  if (days < 2) return 1;
+  if (days < 5) return 2;
+  if (days < 12) return 3;
+  if (days < 20) return 4;
+  return 5;
+}
+
+function cell(point, mm, rainDays, heavyDays, veryHeavyDays, wettestDay, elevation) {
   const h = STEP / 2;
   const { lat, lon } = point;
   return {
     type: 'Feature',
-    properties: { mm: Math.round(mm), elevation: Math.round(elevation) },
+    properties: {
+      mm: Math.round(mm),
+      rain_days: Math.round(rainDays),
+      heavy_days: Math.round(heavyDays),
+      very_heavy_days: Math.round(veryHeavyDays),
+      wettest_day: Math.round(wettestDay),
+      downpour_band: downpourBand(veryHeavyDays),
+      elevation: Math.round(elevation),
+    },
     geometry: {
       type: 'Polygon',
       coordinates: [
@@ -119,22 +142,43 @@ for (let i = 0; i < points.length; i += BATCH) {
     if (result.elevation === 0) return void sea++; // open water
     const daily = result.daily.precipitation_sum;
     const total = daily.reduce((sum, v) => sum + (v ?? 0), 0);
-    features.push(cell(slice[n], total / years, result.elevation));
+    const rainDays = daily.filter((v) => v >= 1).length;
+    const heavyDays = daily.filter((v) => v >= 10).length;
+    const veryHeavyDays = daily.filter((v) => v >= 20).length;
+    const wettestDay = Math.max(...daily.map((v) => v ?? 0));
+    features.push(
+      cell(
+        slice[n],
+        total / years,
+        rainDays / years,
+        heavyDays / years,
+        veryHeavyDays / years,
+        wettestDay,
+        result.elevation,
+      ),
+    );
   });
 
   console.log(`  ${Math.min(i + BATCH, points.length)}/${points.length} points`);
 }
 
 const mm = features.map((f) => f.properties.mm).sort((a, b) => a - b);
+const rainDays = features.map((f) => f.properties.rain_days).sort((a, b) => a - b);
+const veryHeavyDays = features
+  .map((f) => f.properties.very_heavy_days)
+  .sort((a, b) => a - b);
 await mkdir(new URL('./', OUT), { recursive: true });
 await writeFile(
   OUT,
   JSON.stringify({
     type: 'FeatureCollection',
     metadata: {
-      title: `Mean annual precipitation ${FROM}-${TO}`,
-      source: 'ERA5 via Open-Meteo archive API',
+      title: `Mean annual precipitation and rain days ${FROM}-${TO}`,
+      source: 'Open-Meteo Historical Weather API, Best Match model',
       resolution: `${STEP} degrees`,
+      rain_day_threshold_mm: 1,
+      heavy_rain_day_threshold_mm: 10,
+      very_heavy_rain_day_threshold_mm: 20,
       generated: new Date().toISOString().slice(0, 10),
     },
     features,
@@ -143,5 +187,9 @@ await writeFile(
 
 console.log(
   `\nWrote ${features.length} land cells (${sea} sea cells dropped)\n` +
-    `Range ${mm[0]}-${mm[mm.length - 1]} mm, median ${mm[Math.floor(mm.length / 2)]} mm`,
+    `Rainfall ${mm[0]}-${mm[mm.length - 1]} mm, median ${mm[Math.floor(mm.length / 2)]} mm\n` +
+    `Rain days ${rainDays[0]}-${rainDays[rainDays.length - 1]}, ` +
+    `median ${rainDays[Math.floor(rainDays.length / 2)]}\n` +
+    `Very heavy rain days ${veryHeavyDays[0]}-${veryHeavyDays[veryHeavyDays.length - 1]}, ` +
+    `median ${veryHeavyDays[Math.floor(veryHeavyDays.length / 2)]}`,
 );

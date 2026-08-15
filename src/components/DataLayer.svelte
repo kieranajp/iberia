@@ -75,20 +75,34 @@
   };
   const Layer = $derived(components[def.render.type]);
 
-  function onclick(ev: MapLayerMouseEvent) {
-    if (!def.popup) return;
+  const hovers = $derived(def.popup?.trigger === 'hover');
+
+  function show(ev: MapLayerMouseEvent) {
     const feature = ev.features?.[0];
     if (feature) selected = { lnglat: ev.lngLat, props: feature.properties ?? {} };
   }
+
+  const onclick = (ev: MapLayerMouseEvent) => {
+    if (def.popup && !hovers) show(ev);
+  };
+  const onmousemove = (ev: MapLayerMouseEvent) => {
+    if (hovers) show(ev);
+  };
 
   const cursor = (style: string) => () => {
     if (def.popup && ctx.map) ctx.map.getCanvas().style.cursor = style;
   };
 
+  function onmouseleave() {
+    cursor('')();
+    if (hovers) selected = null;
+  }
+
   const fields = $derived(
     selected
       ? (def.popup?.fields ?? []).map((field) => ({
           label: field.label ?? field.key,
+          big: Boolean(field.big),
           value: field.format
             ? field.format(selected!.props[field.key])
             : selected!.props[field.key],
@@ -118,21 +132,33 @@
       maxzoom={def.render.maxzoom}
       filter={def.render.filter}
       {onclick}
-      onmouseenter={cursor('pointer')}
-      onmouseleave={cursor('')}
+      {onmousemove}
+      onmouseenter={cursor(hovers ? 'default' : 'pointer')}
+      {onmouseleave}
     />
   </GeoJSONSource>
 {/if}
 
 {#if selected}
-  <Popup lnglat={selected.lnglat} onclose={() => (selected = null)} maxWidth="260px">
+  <Popup
+    lnglat={hovers ? undefined : selected.lnglat}
+    trackPointer={hovers}
+    closeButton={!hovers}
+    closeOnClick={!hovers}
+    onclose={() => (selected = null)}
+    maxWidth="280px"
+  >
     {#if def.popup?.title}
       <h3>{selected.props[def.popup.title]}</h3>
     {/if}
     <dl>
       {#each fields as field}
-        <dt>{field.label}</dt>
-        <dd>{field.value ?? '—'}</dd>
+        {#if field.big}
+          <dd class="big">{field.value}</dd>
+        {:else}
+          <dt>{field.label}</dt>
+          <dd>{field.value ?? '—'}</dd>
+        {/if}
       {/each}
     </dl>
     {#if comparison}
@@ -142,7 +168,7 @@
 {/if}
 
 {#if error}
-  <p class="error">{def.name}: {def.source} — {error}</p>
+  <p class="note data-error">{def.name}: {def.source} — {error}</p>
 {/if}
 
 <style>
@@ -167,6 +193,14 @@
     font-variant-numeric: tabular-nums;
   }
 
+  dd.big {
+    grid-column: 1 / -1;
+    margin: 1px 0 5px;
+    font-size: 22px;
+    letter-spacing: 3px;
+    line-height: 1.1;
+  }
+
   .compare {
     margin: 8px 0 0;
     padding-top: 6px;
@@ -174,16 +208,8 @@
     color: var(--accent);
   }
 
-  .error {
-    position: absolute;
+  .data-error {
     bottom: 12px;
     left: 12px;
-    z-index: 2;
-    margin: 0;
-    padding: 6px 10px;
-    border-radius: 6px;
-    background: #4a1d1d;
-    color: #ffd7d7;
-    font-size: 12px;
   }
 </style>

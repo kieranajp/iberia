@@ -36,11 +36,11 @@ export default {
 
   // Wanted on every numeric layer: familiar places to measure the map against.
   // They appear as marks on the legend's colour bar, and popups put the clicked
-  // value in their terms ("1.4× Ireland"). Pick places the reader knows in their
+  // value in their terms ("1.4× Derry"). Pick places the reader knows in their
   // bones, not the biggest or the nearest.
   benchmarks: [
     { label: 'Lanzarote', value: 115 },
-    { label: 'Ireland', value: 1230 },
+    { label: 'Derry', value: 1060 },
   ],
 
   render: {
@@ -83,8 +83,15 @@ export default {
 
   // Omit for a layer nothing needs to be read off.
   popup: {
+    // 'hover' follows the pointer and clears on leaving, which suits reading across
+    // an area. 'click' (the default) pins the popup until dismissed.
+    trigger: 'click',
     title: 'name',
-    fields: [{ key: 'value', label: 'Value', format: (v: number) => `${v} units` }],
+    fields: [
+      // `big` draws the value large and label-less, across the popup. For emoji.
+      { key: 'icons', big: true },
+      { key: 'value', label: 'Value', format: (v: number) => `${v} units` },
+    ],
   },
 
   // Escape hatch: for anything the options above cannot express, drop a Svelte

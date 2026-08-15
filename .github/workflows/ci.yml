@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    name: "Layers: Typecheck, validate, build"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+
+      - run: npm ci
+
+      # The datasets are not in the repo. Pull the last released ones, which is
+      # also the only regular exercise the restore path gets.
+      - name: Restore datasets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run data:restore
+
+      # Every layer against the Layer interface.
+      - run: npm run typecheck
+
+      # Every layer against its data, and the MapLibre paint it generates.
+      - run: npm run check
+
+      - run: npm run build

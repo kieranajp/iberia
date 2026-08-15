@@ -6,7 +6,7 @@ import type { Layer, Scale, ScaleSpec } from './types.ts';
  * and Node (`npm run check`), so keep it free of Svelte and DOM imports.
  */
 
-export const RENDER_TYPES = ['circle', 'fill', 'line', 'heatmap', 'symbol'];
+const RENDER_TYPES = ['circle', 'fill', 'line', 'heatmap', 'symbol'];
 
 /** Returns a list of problems. Empty list means the layer is valid. */
 export function validateLayer(def: Layer | undefined, origin = 'unknown'): string[] {

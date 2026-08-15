@@ -7,7 +7,7 @@ type ScaleObject = ScaleSpec<unknown>;
 const isScaleObject = (scale: unknown): scale is ScaleObject =>
   typeof scale === 'object' && scale !== null && !Array.isArray(scale) && 'stops' in scale;
 
-export function scaleToExpression(scale: Scale<unknown> | undefined, fallback: unknown): unknown {
+function scaleToExpression(scale: Scale<unknown> | undefined, fallback: unknown): unknown {
   if (scale === undefined || scale === null) return fallback;
   if (!isScaleObject(scale)) return scale;
 
@@ -30,15 +30,13 @@ export function buildPaint(render: Render): Record<string, unknown> {
     case 'circle':
       return {
         'circle-color': colour,
-        'circle-radius': scaleToExpression(render.radius, [
-          'interpolate',
-          ['linear'],
-          ['zoom'],
-          4,
-          3,
-          12,
-          9,
-        ]),
+        /* Circles grow with zoom when the layer says nothing about size. That default
+           cannot be the fallback for a scale, though: it would end up nested inside a
+           `match` arm, and MapLibre rejects a zoom expression anywhere but the top. */
+        'circle-radius':
+          render.radius === undefined
+            ? ['interpolate', ['linear'], ['zoom'], 4, 3, 12, 9]
+            : scaleToExpression(render.radius, 6),
         'circle-opacity': opacity ?? 0.9,
         'circle-stroke-width': render.strokeWidth ?? 1,
         'circle-stroke-color': render.strokeColour ?? 'rgba(0,0,0,0.5)',
@@ -78,7 +76,7 @@ export function buildPaint(render: Render): Record<string, unknown> {
 }
 
 /** Emoji are drawn to a canvas this many pixels across, then scaled by `icon-size`. */
-export const ICON_PIXELS = 32;
+const ICON_PIXELS = 32;
 
 export function buildLayout(render: Render, imageId?: string): Record<string, unknown> | undefined {
   if (render.type !== 'symbol') return undefined;
@@ -167,7 +165,7 @@ export function sampleColour(scale: ScaleObject, value: number): string {
 const rgb = (hex: string): number[] => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
 
 /**
- * A value put in terms of the closest familiar place, e.g. "1.4× Ireland".
+ * A value put in terms of the closest familiar place, e.g. "1.4× Derry".
  * Closest is measured by ratio, so it works across the whole range of a scale.
  */
 export function compareToBenchmark(value: number, benchmarks: Benchmark[] = []): string | null {
