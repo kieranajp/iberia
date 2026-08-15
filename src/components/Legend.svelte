@@ -161,8 +161,33 @@
   }
 
   .dot {
+    flex: 0 0 auto;
     width: 9px;
     height: 9px;
     border-radius: 2px;
+  }
+
+  @media (max-width: 600px) {
+    .ramp {
+      height: 10px;
+      margin-top: 8px;
+    }
+
+    .ends {
+      font-size: 11px;
+    }
+
+    ul {
+      gap: 5px 12px;
+      margin-top: 7px;
+      margin-bottom: 9px;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .dot {
+      width: 11px;
+      height: 11px;
+    }
   }
 </style>

@@ -24,7 +24,7 @@ here: switch all four on and the country divides itself up in front of you.
 | Tourist pressure | How outnumbered residents are | Eurostat, NUTS 3 regions |
 | Tourist volume | How many tourists, in total | Eurostat, NUTS 3 regions |
 | Who goes where | 62 places rated 0–5 for British, German, French and Spanish crowds | Hand-compiled, `data/resorts.json` |
-| Wine regions | The 2 DOCa and 70 DO wine denominations | MAPA registry + hand-compiled, `data/wine-regions.json` |
+| Wine regions | Spain’s 72 DO/DOCa areas and Portugal’s 12 mainland wine regions | MAPA + IVV boundaries and hand-compiled notes, `data/wine-regions.json` |
 | Eating without meat | How hard a vegetarian will find each region, 1–5 | Hand-compiled, `data/food-culture.json` |
 
 Pressure and volume read the same file and disagree usefully: Valencia is tenth by volume
@@ -53,8 +53,10 @@ Or rebuild them from source:
 npm run data               # all datasets
 npm run data:resorts       # instant
 npm run data:wine-regions  # instant
+npm run data:wine-boundaries  # refresh the simplified MAPA source polygons
 npm run data:food-culture  # instant
 npm run data:tourism       # a minute
+npm run data:rainfall-benchmarks # refreshes the four legend references in seconds
 npm run data:rainfall      # an hour or more: Open-Meteo rate-limits hard, and the
                            # script waits out each window rather than giving up
 ```
@@ -105,7 +107,7 @@ npm run typecheck && npm run check
 There is no registry: the folder is the registration. A layer file is a plain object —
 source, render type, colour stops, popup fields — ending in `satisfies Layer`, so the
 editor lists what is allowed and refuses what is not. `src/lib/types.ts` is the contract,
-`src/layers/_template/layer.ts` is the worked example, and `CLAUDE.md` is the house style.
+`src/layers/_template/layer.ts` is the worked example, and `AGENTS.md` is the house style.
 
 The two checks cover different halves. `typecheck` catches the shape of a layer;
 `check` catches everything types cannot see — missing files, malformed GeoJSON, properties
@@ -120,13 +122,18 @@ from OpenFreeMap. No backend, no API keys, nothing to sign up for.
 ## On the data
 
 Everything is sourced or admitted. The rainfall and tourism layers come from Open-Meteo
-and Eurostat and can be rebuilt from the scripts that made them. The nationality ratings are
+and Eurostat and can be rebuilt from the scripts that made them. Rainfall benchmarks use
+the same 2015–2024 daily series at recorded town-centre coordinates; their exact inputs and
+method live in `data/rainfall-benchmarks.json`. The nationality ratings are
 mine, hand-compiled, and the file says so — they are a judgement about the character of a
 place, not a statistic. Where a source stops at the Spanish border, the layer says so
 rather than leaving Portugal blank, which would read as "no tourists" instead of "no data".
-The wine regions layer takes its list of names, categories and comunidades from MAPA's
-official registry, but plots one representative town per denomination rather than its
-real boundary — MAPA's own shapefile is captcha-gated and there is no free alternative.
+The wine regions layer joins its hand-compiled notes to MAPA's published 1:25,000
+denomination polygons (March 2014), simplified for the web. Campo de Calatrava post-dates
+that map, so it uses the 16 municipalities in its specification from Eurostat GISCO's 2024
+LAU boundaries. Tiny Urbezo uses an explicitly approximate 232-hectare footprint. Portugal
+uses IVV's 12 official mainland wine-region polygons (2023); these are the broad regions,
+not a claim to show every overlapping Portuguese DOP boundary.
 
 ## Commands
 

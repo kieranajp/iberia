@@ -1,0 +1,61 @@
+{
+  "metadata": {
+    "title": "Rainfall legend benchmarks",
+    "source": "Open-Meteo Historical Weather API, Best Match model",
+    "source_url": "https://open-meteo.com/en/docs/historical-weather-api",
+    "endpoint": "https://archive-api.open-meteo.com/v1/archive",
+    "period": "2015-01-01 to 2024-12-31",
+    "timezone": "UTC",
+    "daily_variable": "precipitation_sum",
+    "rain_day_threshold_mm": 1,
+    "very_heavy_rain_day_threshold_mm": 20,
+    "method": "Query the stated town-centre coordinates; total precipitation and qualifying days are divided by ten calendar years. Rainfall and rain-day values are rounded to whole units; very-heavy-rain days to one decimal place.",
+    "generated": "2026-08-15"
+  },
+  "locations": [
+    {
+      "label": "Lanzarote",
+      "latitude": 28.963,
+      "longitude": -13.548,
+      "model_latitude": 28.998241,
+      "model_longitude": -13.52066,
+      "model_elevation_m": 19,
+      "rainfall_mm": 78,
+      "rain_days": 16,
+      "very_heavy_days": 0.3
+    },
+    {
+      "label": "Berlin",
+      "latitude": 52.52,
+      "longitude": 13.405,
+      "model_latitude": 52.54833,
+      "model_longitude": 13.407822,
+      "model_elevation_m": 37,
+      "rainfall_mm": 603,
+      "rain_days": 124,
+      "very_heavy_days": 1.8
+    },
+    {
+      "label": "Derry",
+      "latitude": 54.998,
+      "longitude": -7.309,
+      "model_latitude": 55.008785,
+      "model_longitude": -7.350586,
+      "model_elevation_m": 21,
+      "rainfall_mm": 1180,
+      "rain_days": 208,
+      "very_heavy_days": 4.3
+    },
+    {
+      "label": "Keswick",
+      "latitude": 54.601,
+      "longitude": -3.135,
+      "model_latitude": 54.586994,
+      "model_longitude": -3.1889648,
+      "model_elevation_m": 87,
+      "rainfall_mm": 1960,
+      "rain_days": 226,
+      "very_heavy_days": 19.4
+    }
+  ]
+}

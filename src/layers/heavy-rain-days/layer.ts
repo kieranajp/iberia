@@ -1,4 +1,5 @@
 import type { Layer } from '../../lib/types.ts';
+import { rainfallBenchmarks } from '../_rainfall-benchmarks.ts';
 
 const VERDICTS = [
   '',
@@ -21,12 +22,7 @@ export default {
     'Open-Meteo <a href="https://open-meteo.com/en/docs/historical-weather-api">Historical Weather API</a> (Best Match model); threshold from <a href="https://surfobs.climate.copernicus.eu/userguidance/indicesdictionary.php">Copernicus R20mm</a>',
   unit: 'days/yr',
 
-  benchmarks: [
-    { label: 'Lanzarote', value: 0.3 },
-    { label: 'Berlin', value: 1.8 },
-    { label: 'Derry', value: 4.3 },
-    { label: 'Keswick', value: 19.4 },
-  ],
+  benchmarks: rainfallBenchmarks('very_heavy_days'),
 
   render: {
     type: 'fill',

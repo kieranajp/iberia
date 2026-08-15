@@ -1,4 +1,5 @@
 import type { Layer } from '../../lib/types.ts';
+import { rainfallBenchmarks } from '../_rainfall-benchmarks.ts';
 
 function rainDaysStory(days: number) {
   if (days < 60) return '🌵 Rain is an event here, not a routine.';
@@ -22,13 +23,7 @@ export default {
     'Open-Meteo <a href="https://open-meteo.com/en/docs/historical-weather-api">Historical Weather API</a> (Best Match model)',
   unit: 'days/yr',
 
-  // Same places as the rainfall layer, recalculated as days with at least 1 mm.
-  benchmarks: [
-    { label: 'Lanzarote', value: 16 },
-    { label: 'Berlin', value: 124 },
-    { label: 'Derry', value: 208 },
-    { label: 'Keswick', value: 226 },
-  ],
+  benchmarks: rainfallBenchmarks('rain_days'),
 
   render: {
     type: 'fill',

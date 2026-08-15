@@ -3,50 +3,43 @@ import type { Layer } from '../../lib/types.ts';
 export default {
   id: 'wine-regions',
   name: '🍷 Wine regions',
-  description: 'The DO and DOCa wine denominations, 2 DOCa and 70 DO',
+  description: 'Spain’s 72 DO/DOCa and Portugal’s 12 mainland wine regions',
   group: 'Food & drink',
   order: 30,
 
-  // One point per denomination, at a representative town — not the official boundary.
-  // MAPA publishes the real DO polygons, but the download is captcha-gated and there
-  // is no free alternative, so this cannot be a fill layer the way tourism.geojson is.
   source: '/data/wine-regions.geojson',
-  attribution: 'MAPA, Denominaciones de Origen Protegidas de vinos',
+  attribution:
+    '© <a href="https://www.mapa.gob.es/es/cartografia-y-sig/ide/descargas/alimentacion/vinos">Ministerio de Agricultura, Pesca y Alimentación (MAPA)</a>; <a href="https://www.ivv.gov.pt/np4/785/%7B%24clientServletPath%7D/?fileName=Regi_es_Vitivin_colas_09_12_2024.pdf&newsId=10171">Instituto da Vinha e do Vinho (IVV)</a>; <a href="https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units/local-administrative-units">Eurostat GISCO</a>',
 
   render: {
-    type: 'circle',
+    type: 'fill',
     under: 'labels',
-    opacity: 0.85,
+    opacity: 0.32,
     colour: {
       property: 'category',
       stops: [
         ['DOCa', '#7a1224'],
         ['DO', '#c2536a'],
+        ['Portuguese wine region', '#b7833e'],
       ],
       mode: 'match',
-      format: (v: string) => (v === 'DOCa' ? 'Denominación de Origen Calificada' : 'Denominación de Origen'),
+      format: (v: string) =>
+        ({
+          DOCa: 'Denominación de Origen Calificada',
+          DO: 'Denominación de Origen',
+          'Portuguese wine region': 'Região vitivinícola (Portugal)',
+        })[v] ?? v,
     },
-    // DOCa is the higher of the two quality tiers — only Rioja and Priorat hold it —
-    // so it gets a bigger dot rather than a separate legend.
-    radius: {
-      property: 'category',
-      stops: [
-        ['DOCa', 8],
-        ['DO', 4.5],
-      ],
-      mode: 'match',
-      // `match` needs a fallback even when every value is covered.
-      missing: 4.5,
-    },
-    strokeWidth: 1,
-    strokeColour: 'rgba(255,255,255,0.85)',
+    outline: 'rgba(92, 14, 39, 0.75)',
   },
 
   popup: {
     title: 'name',
     fields: [
       { key: 'category', label: 'Category' },
-      { key: 'comunidad', label: 'Region' },
+      { key: 'country', label: 'Country' },
+      { key: 'comunidad', label: 'Region', format: (v) => (v === 'Portugal' ? 'Mainland' : v) },
+      { key: 'boundary', label: 'Boundary' },
       { key: 'note', label: '' },
     ],
   },

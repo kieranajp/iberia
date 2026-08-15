@@ -1,4 +1,5 @@
 import type { Layer } from '../../lib/types.ts';
+import { rainfallBenchmarks } from '../_rainfall-benchmarks.ts';
 
 function rainfallStory(mm: number) {
   if (mm < 400) return '🏜️ Rain makes a cameo here. It is not part of the regular cast.';
@@ -22,13 +23,7 @@ export default {
     'Open-Meteo <a href="https://open-meteo.com/en/docs/historical-weather-api">Historical Weather API</a> (Best Match model)',
   unit: 'mm/yr',
 
-  // Reference averages, rounded. They anchor the scale to somewhere known.
-  benchmarks: [
-    { label: 'Lanzarote', value: 115 },
-    { label: 'Berlin', value: 570 },
-    { label: 'Derry', value: 1060 },
-    { label: 'Keswick', value: 1530 },
-  ],
+  benchmarks: rainfallBenchmarks('rainfall_mm'),
 
   render: {
     type: 'fill',
