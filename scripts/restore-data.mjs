@@ -10,6 +10,9 @@ import { execFileSync } from 'node:child_process';
 import { mkdir, readdir, readFile, rm } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 
+/** Skips macOS AppleDouble companions, which end in .geojson but are binary. */
+const datasets = (names) => names.filter((f) => f.endsWith('.geojson') && !f.startsWith('._'));
+
 const root = fileURLToPath(new URL('../', import.meta.url));
 const dataDir = `${root}public/data/`;
 const tmpDir = `${root}.release/restore/`;
@@ -37,7 +40,7 @@ execFileSync('tar', ['-xzf', tmpDir + archive, '-C', dataDir], { cwd: root });
 await rm(tmpDir, { recursive: true, force: true });
 
 console.log(`\nRestored from ${archive}:`);
-for (const file of (await readdir(dataDir)).filter((f) => f.endsWith('.geojson'))) {
+for (const file of datasets(await readdir(dataDir))) {
   const { metadata = {}, features = [] } = JSON.parse(await readFile(dataDir + file, 'utf8'));
   console.log(`  ${file}: ${features.length} features, built ${metadata.generated ?? 'unknown'}`);
 }

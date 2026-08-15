@@ -22,7 +22,15 @@ const dryRun = process.argv.includes('--dry-run');
 
 const run = (command, args, whenItFails) => {
   try {
-    return execFileSync(command, args, { cwd: root, stdio: 'inherit', encoding: 'utf8' });
+    /* COPYFILE_DISABLE stops macOS tar writing ._name companions for extended
+       attributes. GNU tar on Linux extracts those as real files, and anything
+       reading the directory then finds a binary "._x.geojson" beside x.geojson. */
+    return execFileSync(command, args, {
+      cwd: root,
+      stdio: 'inherit',
+      encoding: 'utf8',
+      env: { ...process.env, COPYFILE_DISABLE: '1' },
+    });
   } catch {
     console.error(`\n${whenItFails ?? `${command} ${args.join(' ')} failed`}`);
     process.exit(1);
