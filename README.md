@@ -23,6 +23,7 @@ here: switch all four on and the country divides itself up in front of you.
 | Very heavy rain | Mean days/year with at least 20 mm, 2015–2024 | Same Open-Meteo rainfall grid |
 | Tourist pressure | How outnumbered residents are | Eurostat, NUTS 3 regions |
 | Tourist volume | How many tourists, in total | Eurostat, NUTS 3 regions |
+| Toll roads | Distinct toll-road references by mainland province-sized region | OpenStreetMap + Eurostat GISCO |
 | Who goes where | 62 places rated 0–5 for British, German, French and Spanish crowds | Hand-compiled, `data/resorts.json` |
 | Wine regions | Spain’s 72 DO/DOCa areas and Portugal’s 12 mainland wine regions | MAPA + IVV boundaries and hand-compiled notes, `data/wine-regions.json` |
 | Eating without meat | How hard a vegetarian will find each region, 1–5 | Hand-compiled, `data/food-culture.json` |
@@ -56,6 +57,7 @@ npm run data:wine-regions  # instant
 npm run data:wine-boundaries  # refresh the simplified MAPA source polygons
 npm run data:food-culture  # instant
 npm run data:tourism       # a minute
+npm run data:toll-roads     # a few minutes; queries OpenStreetMap through Overpass
 npm run data:rainfall-benchmarks # refreshes the four legend references in seconds
 npm run data:rainfall      # an hour or more: Open-Meteo rate-limits hard, and the
                            # script waits out each window rather than giving up

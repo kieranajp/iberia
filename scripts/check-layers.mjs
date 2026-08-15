@@ -6,7 +6,7 @@
 import { readdir, readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { validateLayer } from '../src/lib/schema.ts';
-import { buildPaint, buildLayout } from '../src/lib/paint.ts';
+import { buildPaint, buildLayout, buildFillPattern } from '../src/lib/paint.ts';
 import { validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
 
 const layersDir = new URL('../src/layers/', import.meta.url);
@@ -107,7 +107,24 @@ function validatePaint(def, path) {
     ],
   };
 
-  return validateStyleMin(style)
+  const errors = validateStyleMin(style)
     .filter((error) => !/icon-image/.test(error.message)) // the image is added at runtime
     .map((error) => `${path}: ${error.message.replace('layers[0].', '')}`);
+
+  if (def.render.type === 'fill') {
+    const pattern = buildFillPattern(def.render, 'check');
+    if (pattern) {
+      const patternStyle = {
+        ...style,
+        layers: [{ id: 'l', type: 'fill', source: 's', paint: pattern.paint }],
+      };
+      errors.push(
+        ...validateStyleMin(patternStyle).map(
+          (error) => `${path} (combined): ${error.message.replace('layers[0].', '')}`,
+        ),
+      );
+    }
+  }
+
+  return errors;
 }

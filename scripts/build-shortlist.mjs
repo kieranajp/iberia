@@ -4,7 +4,7 @@
  *
  *   node scripts/build-shortlist.mjs
  *
- * Writes .release/shortlist.json — the numbers behind the presentation, plus the
+ * Writes .cache/shortlist.json — the numbers behind the presentation, plus the
  * region outlines as SVG paths so the deck needs no map library and no network.
  *
  * Everything here is derived from the layers the map already ships. Nothing is
@@ -145,11 +145,14 @@ console.log(`${spanish.length} provinces in play, ${spanish.filter((r) => !r.pla
    "bring sandwiches"; these are reported rather than ranked. */
 const inedible = spanish.filter((r) => r.rating <= 1);
 const usable = spanish.filter((r) => r.rating > 1);
-const mostWine = Math.max(...usable.map((r) => r.wines));
-const wettest = Math.max(...usable.map((r) => r.drizzle));
-const driest = Math.min(...usable.map((r) => r.drizzle));
+const mostWine = Math.max(...spanish.map((r) => r.wines));
+const wettest = Math.max(...spanish.map((r) => r.drizzle));
+const driest = Math.min(...spanish.map((r) => r.drizzle));
 
-for (const region of usable) {
+/* Every province gets a mark on all four questions, including the ones ruled out for
+   food. Castilla y León has nine denominations and real weather: on those questions it
+   belongs on the map like anywhere else, and is only absent from the final score. */
+for (const region of spanish) {
   // Vegetarian rating carries it, and a fish-forward region gets half a band back.
   const food100 = ((region.rating + (region.fishy ? 0.5 : 0) - 1) / 4) * 100;
   const wine100 = (region.wines / mostWine) * 100;
@@ -204,8 +207,9 @@ for (const region of regions) {
     .join('');
 }
 
-const out = new URL('.release/shortlist.json', root);
-await mkdir(new URL('.release/', root), { recursive: true });
+/* Not in .release/: `npm run release` wipes that directory before packaging. */
+const out = new URL('.cache/shortlist.json', root);
+await mkdir(new URL('.cache/', root), { recursive: true });
 await writeFile(
   out,
   JSON.stringify({
@@ -216,7 +220,20 @@ await writeFile(
     context: regions
       .filter((r) => r.path && !usable.includes(r) && !inedible.includes(r))
       .map((r) => ({ name: r.name, path: r.path })),
-    inedible: inedible.map((r) => ({ name: r.name, verdict: r.verdict, icons: r.icons, meat: r.meat, path: r.path, drizzle: r.drizzle, wines: r.wines })),
+    inedible: inedible.map((r) => ({
+      name: r.name,
+      region: r.region,
+      verdict: r.verdict,
+      icons: r.icons,
+      meat: r.meat,
+      path: r.path,
+      drizzle: r.drizzle,
+      downpours: r.downpours,
+      wines: r.wines,
+      brits: r.brits,
+      rated: r.rated,
+      parts: r.parts,
+    })),
     viewBox: `0 0 ${WIDTH} ${HEIGHT}`,
     regions: usable.map(({ path, ...rest }) => ({ ...rest, path })),
   }),

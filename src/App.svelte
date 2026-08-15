@@ -9,6 +9,9 @@
 
   let map = $state<maplibregl.Map | undefined>();
   let mapError = $state<string | null>(null);
+  const combineFills = $derived(
+    layers.filter((def) => ui.enabled[def.id] && def.render?.type === 'fill').length > 1,
+  );
 
   /* MapLibre rejects a bad paint or layout by throwing an error event and drawing
      nothing. Without this, a broken layer looks exactly like an empty one. */
@@ -45,7 +48,7 @@
       {#if Custom}
         <Custom {def} />
       {:else}
-        <DataLayer {def} />
+        <DataLayer {def} {combineFills} />
       {/if}
     {/if}
   {/each}

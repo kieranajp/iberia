@@ -1,4 +1,4 @@
-import type { Benchmark, Render, Scale, ScaleSpec } from './types.ts';
+import type { Benchmark, FillRender, Render, Scale, ScaleSpec } from './types.ts';
 
 /** Turns the declarative `render` block of a layer into MapLibre paint properties. */
 
@@ -20,6 +20,167 @@ function scaleToExpression(scale: Scale<unknown> | undefined, fallback: unknown)
     return ['step', value, first, ...stops.slice(1).flat()];
   }
   return ['interpolate', ['linear'], value, ...stops.flat()];
+}
+
+export type PatternKind =
+  | 'diagonal'
+  | 'reverse-diagonal'
+  | 'horizontal'
+  | 'vertical'
+  | 'dots'
+  | 'crosshatch';
+
+/**
+ * Area layers from different sections get different visual channels when combined.
+ * Keeping this mapping here makes map textures and legend textures agree.
+ */
+export function patternForGroup(group: string | undefined): PatternKind {
+  switch (group) {
+    case 'Practical':
+      return 'diagonal';
+    case 'Food & drink':
+      return 'dots';
+    case 'Climate':
+      return 'horizontal';
+    case 'Landscape':
+      return 'vertical';
+    case 'Culture':
+      return 'crosshatch';
+    default:
+      return 'reverse-diagonal';
+  }
+}
+
+export interface FillPatternSpec {
+  images: { id: string; colour: string }[];
+  paint: Record<string, unknown>;
+}
+
+/**
+ * Turns a fill colour scale into categorical image ids. MapLibre cannot blend
+ * pattern images, so continuous scales are deliberately quantised at the
+ * midpoints between their authored stops while layers are combined.
+ */
+export function buildFillPattern(render: FillRender, prefix: string): FillPatternSpec | null {
+  const colour = render.colour ?? '#7aa2f7';
+  if (typeof colour === 'string') {
+    const id = `${prefix}-pattern-0`;
+    return {
+      images: [{ id, colour }],
+      paint: patternPaint(render, id),
+    };
+  }
+  if (!isScaleObject(colour)) return null;
+
+  const stops = colour.stops;
+  if (!stops.length || stops.some(([, output]) => typeof output !== 'string')) return null;
+
+  const images = stops.map(([, output], i) => ({ id: `${prefix}-pattern-${i}`, colour: output as string }));
+  const value = ['get', colour.property];
+  const mode = colour.mode ?? 'interpolate';
+  let expression: unknown;
+
+  if (mode === 'match') {
+    const fallbackColour = typeof colour.missing === 'string' ? colour.missing : null;
+    let fallbackId = images[0].id;
+    if (fallbackColour) {
+      const existing = images.find((image) => image.colour === fallbackColour);
+      fallbackId = existing?.id ?? `${prefix}-pattern-missing`;
+      if (!existing) images.push({ id: fallbackId, colour: fallbackColour });
+    }
+    expression = ['match', value, ...stops.flatMap(([key], i) => [key, images[i].id]), fallbackId];
+  } else {
+    const thresholds = stops.slice(1).flatMap(([stop], i) => {
+      const threshold =
+        mode === 'step'
+          ? stop
+          : ((stops[i][0] as number) + (stop as number)) / 2;
+      return [threshold, images[i + 1].id];
+    });
+    expression = ['step', value, images[0].id, ...thresholds];
+  }
+
+  return { images, paint: patternPaint(render, expression) };
+}
+
+function patternPaint(render: FillRender, pattern: unknown): Record<string, unknown> {
+  return {
+    'fill-pattern': pattern,
+    'fill-opacity': 0.94,
+    ...(render.outline ? { 'fill-outline-color': render.outline } : {}),
+  };
+}
+
+/** Draws one seamless map texture. The pale halo keeps its colour legible over roads and labels. */
+export function fillPatternImage(colour: string, kind: PatternKind, pixels = 32): ImageData {
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = pixels;
+  const ctx = canvas.getContext('2d')!;
+
+  if (kind === 'dots') {
+    const dot = (x: number, y: number, fill: string, radius: number) => {
+      ctx.fillStyle = fill;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    };
+    for (const [x, y] of [
+      [pixels / 4, pixels / 4],
+      [(pixels * 3) / 4, (pixels * 3) / 4],
+    ]) {
+      dot(x, y, 'rgba(255,255,255,0.72)', 6);
+      dot(x, y, colour, 4);
+    }
+    return ctx.getImageData(0, 0, pixels, pixels);
+  }
+
+  const path = () => {
+    ctx.beginPath();
+    if (kind === 'horizontal') {
+      ctx.moveTo(0, pixels / 2);
+      ctx.lineTo(pixels, pixels / 2);
+    } else if (kind === 'vertical') {
+      ctx.moveTo(pixels / 2, 0);
+      ctx.lineTo(pixels / 2, pixels);
+    } else {
+      const diagonal = (reverse: boolean) => {
+        for (let offset = -pixels; offset <= pixels * 2; offset += pixels) {
+          ctx.moveTo(offset, 0);
+          ctx.lineTo(reverse ? offset - pixels : offset + pixels, pixels);
+        }
+      };
+      diagonal(kind === 'reverse-diagonal');
+      if (kind === 'crosshatch') diagonal(true);
+    }
+  };
+
+  const stroke = (style: string, width: number) => {
+    path();
+    ctx.strokeStyle = style;
+    ctx.lineWidth = width;
+    ctx.stroke();
+  };
+  stroke('rgba(255,255,255,0.72)', 6);
+  stroke(colour, 3);
+  return ctx.getImageData(0, 0, pixels, pixels);
+}
+
+/** CSS equivalent of the map texture, used by patterned legends. */
+export function patternCss(kind: PatternKind, colour: string): string {
+  switch (kind) {
+    case 'dots':
+      return `radial-gradient(circle, ${colour} 0 2px, transparent 2.3px)`;
+    case 'horizontal':
+      return `repeating-linear-gradient(0deg, transparent 0 4px, ${colour} 4px 6px)`;
+    case 'vertical':
+      return `repeating-linear-gradient(90deg, transparent 0 4px, ${colour} 4px 6px)`;
+    case 'reverse-diagonal':
+      return `repeating-linear-gradient(135deg, transparent 0 5px, ${colour} 5px 7px)`;
+    case 'crosshatch':
+      return `repeating-linear-gradient(45deg, transparent 0 5px, ${colour} 5px 7px), repeating-linear-gradient(135deg, transparent 0 5px, ${colour} 5px 7px)`;
+    default:
+      return `repeating-linear-gradient(45deg, transparent 0 5px, ${colour} 5px 7px)`;
+  }
 }
 
 export function buildPaint(render: Render): Record<string, unknown> {

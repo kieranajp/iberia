@@ -6,13 +6,17 @@
     scaleRange,
     colourScale,
     sizeScale,
+    patternCss,
   } from '../lib/paint.ts';
+  import type { PatternKind } from '../lib/paint.ts';
   import type { Layer } from '../lib/types.ts';
 
-  let { def }: { def: Layer } = $props();
+  let { def, pattern }: { def: Layer; pattern?: PatternKind } = $props();
 
   const scale = $derived(colourScale(def.render));
-  const continuous = $derived(scale && (scale.mode ?? 'interpolate') === 'interpolate' ? scale : null);
+  const continuous = $derived(
+    !pattern && scale && (scale.mode ?? 'interpolate') === 'interpolate' ? scale : null,
+  );
   const swatches = $derived(continuous ? [] : legendEntries(def.render));
 
   const format = $derived(continuous?.format ?? ((v: number) => v.toLocaleString('en-GB')));
@@ -92,7 +96,15 @@
 {:else if swatches.length}
   <ul class="swatches">
     {#each swatches as entry}
-      <li><span class="dot" style:background={entry.colour}></span>{entry.label}</li>
+      <li>
+        <span
+          class="dot"
+          class:patterned={pattern}
+          style:background={pattern ? 'var(--panel)' : entry.colour}
+          style:background-image={pattern ? patternCss(pattern, entry.colour) : undefined}
+        ></span>
+        {entry.label}
+      </li>
     {/each}
   </ul>
 {/if}
@@ -165,6 +177,11 @@
     width: 9px;
     height: 9px;
     border-radius: 2px;
+  }
+
+  .dot.patterned {
+    border: 1px solid color-mix(in srgb, var(--muted) 45%, transparent);
+    background-size: 8px 8px;
   }
 
   @media (max-width: 600px) {

@@ -2,6 +2,7 @@
   import { layers, groups } from '../lib/layers.ts';
   import { ui } from '../lib/state.svelte.ts';
   import type { Layer } from '../lib/types.ts';
+  import { patternForGroup } from '../lib/paint.ts';
   import Legend from './Legend.svelte';
 
   let query = $state('');
@@ -25,6 +26,9 @@
 
   const activeCount = (defs: Layer[]) => defs.filter((d) => ui.enabled[d.id]).length;
   const enabledCount = $derived(layers.filter((def) => ui.enabled[def.id]).length);
+  const combineFills = $derived(
+    layers.filter((def) => ui.enabled[def.id] && def.render?.type === 'fill').length > 1,
+  );
 
   /* Groups holding something switched on stay open, until the reader says otherwise. */
   const isOpen = (group: string, defs: Layer[]) => opened[group] ?? (Boolean(query) || activeCount(defs) > 0);
@@ -66,6 +70,10 @@
         <input type="search" aria-label="Find a layer" placeholder="Find a layer" bind:value={query} />
       {/if}
 
+      {#if combineFills}
+        <p class="composition-note">Area layers use section patterns while combined.</p>
+      {/if}
+
       {#each Object.entries(matches) as [group, defs] (group)}
         <details
           open={isOpen(group, defs)}
@@ -84,7 +92,14 @@
                 {#if def.description}<em>{def.description}</em>{/if}
               </span>
             </label>
-            {#if ui.enabled[def.id]}<Legend {def} />{/if}
+            {#if ui.enabled[def.id]}
+              <Legend
+                {def}
+                pattern={combineFills && def.render?.type === 'fill'
+                  ? patternForGroup(def.group)
+                  : undefined}
+              />
+            {/if}
           {/each}
         </details>
       {:else}
@@ -279,6 +294,17 @@
     margin: 10px 0 4px;
     font-size: 12px;
     color: var(--muted);
+  }
+
+  .composition-note {
+    margin: 7px 0 3px;
+    padding: 6px 8px;
+    border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--line));
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+    color: var(--muted);
+    font-size: 10px;
+    line-height: 1.35;
   }
 
   @media (max-width: 600px) {

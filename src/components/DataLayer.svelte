@@ -18,12 +18,15 @@
     compareToBenchmark,
     colourScale,
     emojiImage,
+    buildFillPattern,
+    fillPatternImage,
+    patternForGroup,
   } from '../lib/paint.ts';
   import { firstLabelLayerId } from '../lib/basemaps.ts';
   import type { DataLayer } from '../lib/types.ts';
 
   /** Renders any layer whose `render` block is declarative. */
-  let { def }: { def: DataLayer } = $props();
+  let { def, combineFills = false }: { def: DataLayer; combineFills?: boolean } = $props();
 
   const ctx = getMapContext();
   const paint = $derived(buildPaint(def.render));
@@ -34,6 +37,16 @@
   const iconId = $derived(icon ? `${def.id}-icon` : undefined);
   const iconImage = $derived(icon ? emojiImage(icon) : undefined);
   const layout = $derived(buildLayout(def.render, iconId));
+
+  const fillPattern = $derived(
+    combineFills && def.render.type === 'fill' ? buildFillPattern(def.render, def.id) : null,
+  );
+  const patternImages = $derived(
+    fillPattern?.images.map(({ id, colour }) => ({
+      id,
+      image: fillPatternImage(colour, patternForGroup(def.group)),
+    })) ?? [],
+  );
 
   let selected = $state<{ lnglat: LngLat; props: Record<string, unknown> } | null>(null);
   let data = $state<FeatureCollection | null>(null);
@@ -121,21 +134,40 @@
   <Image id={iconId} image={iconImage} options={{ pixelRatio: 2 }} />
 {/if}
 
+{#each patternImages as pattern (pattern.id)}
+  <Image id={pattern.id} image={pattern.image} options={{ pixelRatio: 2 }} />
+{/each}
+
 {#if data}
   <GeoJSONSource id={def.id} {data} attribution={def.attribution}>
-    <Layer
-      id={layerId}
-      paint={paint as never}
-      layout={layout as never}
-      {beforeId}
-      minzoom={def.render.minzoom}
-      maxzoom={def.render.maxzoom}
-      filter={def.render.filter}
-      {onclick}
-      {onmousemove}
-      onmouseenter={cursor(hovers ? 'default' : 'pointer')}
-      {onmouseleave}
-    />
+    {#if fillPattern}
+      <FillLayer
+        id={layerId}
+        paint={fillPattern.paint as never}
+        {beforeId}
+        minzoom={def.render.minzoom}
+        maxzoom={def.render.maxzoom}
+        filter={def.render.filter}
+        {onclick}
+        {onmousemove}
+        onmouseenter={cursor(hovers ? 'default' : 'pointer')}
+        {onmouseleave}
+      />
+    {:else}
+      <Layer
+        id={layerId}
+        paint={paint as never}
+        layout={layout as never}
+        {beforeId}
+        minzoom={def.render.minzoom}
+        maxzoom={def.render.maxzoom}
+        filter={def.render.filter}
+        {onclick}
+        {onmousemove}
+        onmouseenter={cursor(hovers ? 'default' : 'pointer')}
+        {onmouseleave}
+      />
+    {/if}
   </GeoJSONSource>
 {/if}
 
