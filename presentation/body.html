@@ -1,0 +1,632 @@
+<div class="deck">
+  <!-- 1 — premise -->
+  <section class="slide on" data-slide>
+    <p class="eyebrow">Iberia, scored</p>
+    <h1>We live here. So where should we actually go?</h1>
+    <p class="lede">
+      A year of trips to plan, a whole peninsula to choose from, and four things we care about.
+      Rather than guess, we put <span data-stat="provinces"></span> provinces across Spain and
+      Portugal through the same four questions and let the map answer.
+      <strong>The last question turned out to decide everything.</strong>
+    </p>
+    <div class="questions">
+      <div class="q"><span class="n">Can we eat?</span><p>Somewhere a vegetarian isn't handed a plate of ham.</p></div>
+      <div class="q"><span class="n">Is there wine?</span><p>Proper wine country, not a supermarket shelf.</p></div>
+      <div class="q"><span class="n">Will it rain on us?</span><p>A thunderstorm is fine. A fortnight of drizzle is not.</p></div>
+      <div class="q"><span class="n">Will it be full of Brits?</span><p>We did not move here to queue behind a stag do.</p></div>
+    </div>
+  </section>
+
+  <!-- 2 — where the answers come from -->
+  <section class="slide" data-slide>
+    <p class="eyebrow">Before the answers</p>
+    <h2>Where these numbers came from</h2>
+    <p class="lede">Two of the four are measurements. Two are opinions. It matters which is which, so here it is up front.</p>
+    <div class="sources">
+      <div class="source measured">
+        <span class="tag">Measured</span>
+        <h3>The rain</h3>
+        <p>
+          Ten years of daily weather for every province on this map, in squares about 55&nbsp;km
+          across, from the European reanalysis the forecasters check themselves against. It took
+          the best part of two hours to download, one batch at a time, because the weather
+          service kept telling us to slow down.
+        </p>
+      </div>
+      <div class="source measured">
+        <span class="tag">Measured</span>
+        <h3>The wine</h3>
+        <p>
+          Spain's agriculture ministry and Portugal's equivalent between them publish every
+          protected denomination — <span data-stat="wineDOs"></span> of them show up somewhere on
+          this map — with real boundaries rather than dots on a map. We counted the ones whose
+          territory falls inside each province.
+        </p>
+      </div>
+      <div class="source judged">
+        <span class="tag">Judged</span>
+        <h3>The food</h3>
+        <p>
+          Province by province, what each one actually cooks — the dishes, not the restaurant
+          listings — rated 1 to 5 for how hard you'd find it without meat. There is no survey
+          that answers this. The obvious substitute, counting vegetarian restaurants, turns out
+          to measure where map-makers live rather than where you can eat.
+        </p>
+      </div>
+      <div class="source judged">
+        <span class="tag">Judged</span>
+        <h3>The British bit</h3>
+        <p>
+          <span data-stat="ratedPlaces"></span> resorts and cities, rated by hand from 0 to 5.
+          Spain's statistics office knows how many Britons visit the country, and it knows how
+          many people visit each region, but it does not publish the two together — so there is
+          nothing to check this against. Treat it as an argument, not a fact.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 — food -->
+  <section class="slide" data-slide data-map="food">
+    <p class="eyebrow">Question one</p>
+    <h2>Can we eat?</h2>
+    <p class="lede">
+      The meat belt is real and it runs right across the middle: Castilla y León roasts lamb and
+      suckling pig, Extremadura exists for the acorn-fed pig, Asturias puts pork in the bean stew,
+      and central Portugal roasts its own piglet for Bairrada. The Mediterranean arc is a
+      different country — rice, aubergines, artichokes, chickpeas.
+    </p>
+    <div class="map-wrap">
+      <div class="map-frame"><svg class="map" data-svg role="img" aria-label="Iberian provinces shaded by how easy they are without meat"></svg></div>
+      <div class="readout" data-readout>
+        <p class="hint">Hover any region.</p>
+        <div class="scale"><span>a plate of ham</span><span class="bar"></span><span>you'll eat well</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 — wine -->
+  <section class="slide" data-slide data-map="wine">
+    <p class="eyebrow">Question two</p>
+    <h2>Is there wine?</h2>
+    <p class="lede">
+      Tarragona alone carries five denominations, Priorat and Montsant among them; Zaragoza has
+      four; Ciudad Real has three. Portugal counts too now — Douro carries two of its own. This
+      counts territory, not quality — five in Tarragona beats one in Rioja here, which is a
+      conversation for the dinner table rather than a flaw in the map.
+    </p>
+    <div class="map-wrap">
+      <div class="map-frame"><svg class="map" data-svg role="img" aria-label="Iberian provinces shaded by number of wine denominations"></svg></div>
+      <div class="readout" data-readout>
+        <p class="hint">Hover any region.</p>
+        <div class="scale"><span>none</span><span class="bar"></span><span>ten</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 — rain -->
+  <section class="slide" data-slide data-map="drizzle">
+    <p class="eyebrow">Question three</p>
+    <h2>Will it rain on us?</h2>
+    <p class="lede">
+      Counting days it rained at all, not how much fell — because that is the difference between
+      a dramatic August evening and a ruined week. Murcia gets 59 wet days a year. Navarra gets
+      157, and its vegetables are wonderful precisely because of it.
+    </p>
+    <div class="map-wrap">
+      <div class="map-frame"><svg class="map" data-svg role="img" aria-label="Iberian provinces shaded by dryness"></svg></div>
+      <div class="readout" data-readout>
+        <p class="hint">Hover any region.</p>
+        <div class="scale"><span>persistently wet</span><span class="bar"></span><span>dry</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 — brits -->
+  <section class="slide" data-slide data-map="brits">
+    <p class="eyebrow">Question four</p>
+    <h2>Will it be full of Brits?</h2>
+    <p class="lede">
+      Here is the decision that shapes everything after it. Being surrounded by Britons doesn't
+      cost a trip a few points — it changes what the trip is. So this isn't a quarter of the
+      score. <strong>It's a discount applied to the whole thing:</strong> every point of average
+      British presence knocks 18% off whatever a province earned elsewhere.
+    </p>
+    <div class="map-wrap">
+      <div class="map-frame"><svg class="map" data-svg role="img" aria-label="Iberian provinces shaded by absence of British tourists"></svg></div>
+      <div class="readout" data-readout>
+        <p class="hint">Hover any region.</p>
+        <div class="scale"><span>Benidorm</span><span class="bar"></span><span>nobody</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 — compare -->
+  <section class="slide" data-slide data-map="food" data-lenses>
+    <p class="eyebrow">All four, side by side</p>
+    <h2>Compare the four questions</h2>
+    <p class="lede">
+      Same map, four lenses, no verdict yet. Switch between them to see which provinces do well
+      on some questions and badly on others, before the discount decides anything.
+    </p>
+    <div class="lenses" role="group" aria-label="Choose a lens">
+      <button class="lens" data-lens="food" aria-pressed="true">Food</button>
+      <button class="lens" data-lens="wine" aria-pressed="false">Wine</button>
+      <button class="lens" data-lens="drizzle" aria-pressed="false">Dry</button>
+      <button class="lens" data-lens="brits" aria-pressed="false">Brit-free</button>
+    </div>
+    <div class="map-wrap">
+      <div class="map-frame"><svg class="map" data-svg role="img" aria-label="Iberian provinces shaded by whichever question you choose"></svg></div>
+      <div class="readout" data-readout>
+        <p class="hint">Hover any region.</p>
+        <div class="scale"><span>worse</span><span class="bar"></span><span>better</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 — the twist -->
+  <section class="slide" data-slide>
+    <p class="eyebrow">Adding it up</p>
+    <h2>The best places lose the most</h2>
+    <p class="lede">
+      Hatching is what each province earned on food, wine and weather; solid is what survives the
+      discount. Málaga and Cádiz sit on the same coast with the same merit, 74, and the same food
+      score, 88. <strong>One finishes on 30. The other finishes on 61.</strong> The difference is
+      entirely who else goes there — Fuengirola, Marbella and Nerja against Conil and Zahara. It's
+      why this ranking runs by province rather than by region: as a single Andalucía, those two
+      would have averaged into meaninglessness. Tarragona has the highest merit anywhere in the
+      ranking, 85, and Salou alone drags it down to 50.
+    </p>
+    <div class="bars" id="taxBars"></div>
+  </section>
+
+  <!-- 8 — the answer -->
+  <section class="slide" data-slide data-map="score" data-lenses>
+    <p class="eyebrow">The answer</p>
+    <h2><span data-stat="winnerHeadline"></span></h2>
+    <p class="lede">
+      The market garden of Europe: 59 wet days a year, artichokes and pisto on every menu, and
+      nothing whatsoever that a tour operator wants. <strong>It wins by having nothing anyone else
+      came for</strong> — Huelva has better food but only one wine denomination to Murcia's two,
+      Jaén has no wine at all, and Cádiz has both but pays for the resorts on its own coast.
+      Switch the lens to see how each of them got there.
+    </p>
+    <div class="lenses" role="group" aria-label="Choose a lens">
+      <button class="lens" data-lens="score" aria-pressed="true">Final</button>
+      <button class="lens" data-lens="food" aria-pressed="false">Food</button>
+      <button class="lens" data-lens="wine" aria-pressed="false">Wine</button>
+      <button class="lens" data-lens="drizzle" aria-pressed="false">Dry</button>
+      <button class="lens" data-lens="brits" aria-pressed="false">Brit-free</button>
+    </div>
+    <div class="map-wrap">
+      <div class="map-frame"><svg class="map" data-svg role="img" aria-label="Iberian provinces shaded by final score"></svg></div>
+      <div class="readout" data-readout>
+        <p class="hint">Hover any region.</p>
+        <div class="scale"><span>worse</span><span class="bar"></span><span>better</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 — ranking -->
+  <section class="slide" data-slide>
+    <p class="eyebrow">In order</p>
+    <h2>The shortlist</h2>
+    <p class="lede"><span data-stat="provinces"></span> provinces, ranked. Hover any bar for the detail behind it.</p>
+    <div class="bars" id="rankBars"></div>
+  </section>
+
+  <!-- 10 — top three -->
+  <section class="slide" data-slide>
+    <p class="eyebrow">Book these</p>
+    <h2>The top three, in their own words</h2>
+    <p class="lede">What's on the menu, what to ask for instead, and what to drink while you argue about it.</p>
+    <div class="mini-wrap">
+      <div>
+        <div class="map-frame mini"><svg class="map" data-mini-map="top" role="img" aria-label="Map of Iberia with the top three provinces highlighted"></svg></div>
+        <p class="mini-cap good">Highlighted — the top three</p>
+      </div>
+      <div class="cards" id="topCards"></div>
+    </div>
+  </section>
+
+  <!-- 11 — ruled out -->
+  <section class="slide" data-slide>
+    <p class="eyebrow">Not on the list</p>
+    <h2>Where you'd be eating chips</h2>
+    <p class="lede">
+      <span data-stat="inedible"></span> provinces never entered the ranking at all — essentially
+      the meat belt of Castilla y León, Extremadura, Asturias and central Portugal. Wine and
+      weather can't rescue somewhere you can't have dinner.
+    </p>
+    <div class="mini-wrap">
+      <div>
+        <div class="map-frame mini"><svg class="map" data-mini-map="out" role="img" aria-label="Map of Iberia with the ruled-out provinces highlighted"></svg></div>
+        <p class="mini-cap bad">Highlighted — ruled out</p>
+      </div>
+      <div class="cards" id="outCards"></div>
+    </div>
+  </section>
+
+  <!-- 12 — caveats -->
+  <section class="slide" data-slide>
+    <p class="eyebrow">Before you book</p>
+    <h2>What not to trust here</h2>
+    <p class="lede">In order of how much it should worry you.</p>
+    <div class="notes">
+      <div class="note">
+        <h3>No data reads the same as no Britons</h3>
+        <p><span data-stat="noBritCount"></span> of <span data-stat="provinces"></span> ranked provinces — <span data-stat="noBritPct"></span>% of them — have no place rated for British presence at all, so they clear question four by default rather than by evidence. Huelva and Jaén are both top five partly on that basis.</p>
+      </div>
+      <div class="note">
+        <h3>The British ratings are mine</h3>
+        <p>Hand-compiled judgements about <span data-stat="ratedPlaces"></span> places, and the single biggest lever in the whole thing. If you think Sitges belongs at 3 rather than 2, the ranking changes.</p>
+      </div>
+      <div class="note">
+        <h3>Portugal is in, its British data mostly isn't</h3>
+        <p><span data-stat="ptNoBrit"></span> of Portugal's <span data-stat="ptTotal"></span> provinces have no rated resort at all — only <span data-stat="ptRatedNames"></span> do. The food and wine numbers are real; the Brit-free score there is mostly nobody having looked.</p>
+      </div>
+      <div class="note">
+        <h3>The weather is an average</h3>
+        <p>Ten years, in 55&nbsp;km squares. Enough to answer "is it grim in Galicia", useless for choosing a fortnight in May.</p>
+      </div>
+      <div class="note">
+        <h3>Wine is counted, not tasted</h3>
+        <p>A denomination is a denomination here, Spanish or Portuguese, whether it's Priorat or somewhere you've never heard of with nine hectares.</p>
+      </div>
+      <div class="note">
+        <h3>And the whole thing is one opinion</h3>
+        <p>Four weights, chosen by us, for us. Someone who eats meat and likes a familiar pub would get a completely different map out of the same data.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13 — over to you -->
+  <section class="slide" data-slide>
+    <p class="eyebrow">Over to you</p>
+    <h2>Disagree with all of it</h2>
+    <p class="lede">
+      Every number here came off the map, and the map is live. Turn the layers on and off,
+      hover the regions, and see whether you'd have weighted it the same way.
+    </p>
+    <a class="cta" href="https://iberia.kieranajp.uk" target="_blank" rel="noopener">
+      <span class="cta-label">iberia.kieranajp.uk</span>
+      <span class="cta-sub">Go and mess with it yourself</span>
+    </a>
+    <div class="layer-list">
+      <span class="chip">🥬 Eating without meat</span>
+      <span class="chip">🍷 Wine regions</span>
+      <span class="chip">Yearly rainfall</span>
+      <span class="chip">Rainy days</span>
+      <span class="chip">Very heavy rain</span>
+      <span class="chip">🇬🇧 British</span>
+      <span class="chip">🇩🇪 German</span>
+      <span class="chip">🇫🇷 French</span>
+      <span class="chip">🇪🇸 Spanish</span>
+      <span class="chip">Tourist pressure</span>
+      <span class="chip">Tourist volume</span>
+    </div>
+    <p class="lede" style="margin-top:20px">
+      Switch the four nationality layers on together, incidentally, and the country divides
+      itself up in front of you — Germans in Mallorca, French along the Costa Brava, Spaniards
+      on the north coast, Brits where you'd expect.
+    </p>
+  </section>
+
+  <nav class="nav" aria-label="Slides">
+    <button id="prev" type="button" aria-label="Previous slide">‹ Back</button>
+    <div class="dots" id="dots" role="tablist"></div>
+    <span class="counter" id="counter"></span>
+    <button id="next" type="button" aria-label="Next slide">Next ›</button>
+  </nav>
+</div>
+
+<script>
+  const RAMP = ['#8f2140', '#bf4f2e', '#c9b458', '#6a994e', '#2d6a4f'];
+  const shade = (value) => RAMP[Math.min(4, Math.max(0, Math.floor(value / 20.01)))];
+  const ranked = DATA.regions;
+  const lensValue = (region, lens) => (lens === 'score' ? region.score : region.parts[lens]);
+
+  /* --- dynamic prose stats: recomputed from DATA so these numbers can't go stale --- */
+  const joinNames = (names) =>
+    names.length <= 1 ? names.join('') : `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
+
+  const byScore = [...ranked].sort((a, b) => b.score - a.score);
+  const winner = byScore[0];
+  const runnerUp = byScore[1];
+  const margin = winner.score - runnerUp.score;
+
+  const ratedPlaces = new Set();
+  ranked.forEach((r) => (r.rated || []).forEach((p) => ratedPlaces.add(p)));
+
+  const wineNames = new Set();
+  [...ranked, ...DATA.inedible].forEach((r) => (r.wineNames || []).forEach((w) => wineNames.add(w)));
+
+  const noBritData = ranked.filter((r) => !r.rated.length);
+  const ptRanked = ranked.filter((r) => r.code.startsWith('PT'));
+  const ptRated = ptRanked.filter((r) => r.brits > 0);
+
+  const stats = {
+    provinces: ranked.length,
+    inedible: DATA.inedible.length,
+    ratedPlaces: ratedPlaces.size,
+    wineDOs: wineNames.size,
+    noBritCount: noBritData.length,
+    noBritPct: Math.round((noBritData.length / ranked.length) * 100),
+    ptTotal: ptRanked.length,
+    ptNoBrit: ptRanked.length - ptRated.length,
+    ptRatedNames: joinNames(ptRated.map((r) => r.name)),
+    winnerHeadline:
+      margin === 0
+        ? `${winner.name} and ${runnerUp.name}, tied`
+        : `${winner.name}, by ${margin === 1 ? 'a single point' : `${margin} points`}`,
+  };
+
+  document.querySelectorAll('[data-stat]').forEach((el) => {
+    el.textContent = stats[el.dataset.stat];
+  });
+
+  /* Each question slide gets its own map, pinned to that question. Only the last one
+     shows the total, so the answer arrives when the argument is finished. */
+  const maps = [];
+
+  const lensLine = (region, lens) =>
+    ({
+      food: `${region.parts.food} / 100 for eating without meat${region.fishy ? ', and fish-forward' : ''}`,
+      wine: `${region.wines} denomination${region.wines === 1 ? '' : 's'}`,
+      drizzle: `${region.drizzle} wet days a year · ${region.downpours} downpours`,
+      brits: region.brits
+        ? `${region.brits} / 5 on average${region.rated?.length ? ` — ${region.rated.join(', ')}` : ''}`
+        : 'nothing worth mentioning',
+    })[lens];
+
+  function detail(region, lens) {
+    const only = lens !== 'score';
+    const line = lensLine(region, lens);
+
+    return `
+      <div class="icons">${region.icons}</div>
+      <h3>${region.name}</h3>
+      <p class="verdict">${region.verdict}</p>
+      <dl>
+        ${only ? `<dt>Here</dt><dd>${line}</dd>` : `
+          <dt>Score</dt><dd>${region.score} / 100${region.britFactor < 1 ? ` <span style="color:var(--muted)">(${region.merit} before the discount)</span>` : ''}</dd>
+          <dt>Food</dt><dd>${region.parts.food}${region.fishy ? ' · fish-forward' : ''}</dd>
+          <dt>Wine</dt><dd>${region.wines} denomination${region.wines === 1 ? '' : 's'}</dd>
+          <dt>Rain</dt><dd>${region.drizzle} wet days · ${region.downpours} downpours</dd>
+          <dt>Brits</dt><dd>${region.brits ? `${region.brits} / 5${region.worst.length ? ` — ${region.worst.join(', ')}` : ''}` : 'none worth noting'}</dd>`}
+      </dl>`;
+  }
+
+  function buildMap(slide) {
+    const svg = slide.querySelector('[data-svg]');
+    const readout = slide.querySelector('[data-readout]');
+    const rest = readout.innerHTML;
+    let lens = slide.dataset.map;
+    svg.setAttribute('viewBox', DATA.viewBox);
+
+    const add = (region, kind, onEnter) => {
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', region.path);
+      path.setAttribute('class', `region ${kind}`);
+      if (onEnter) {
+        path.addEventListener('mouseenter', onEnter);
+        path.setAttribute('tabindex', '0');
+        path.addEventListener('focus', onEnter);
+      } else {
+        path.setAttribute('aria-hidden', 'true');
+      }
+      svg.appendChild(path);
+      return path;
+    };
+
+    DATA.context.forEach((r) => add(r, 'context'));
+
+    /* The provinces that failed the food test still have wine, weather and tourists.
+       They are only absent from the final score, so they are greyed out on that lens
+       and shaded like anywhere else on the other four. */
+    const ruledOut = new Map(
+      DATA.inedible.map((r) => [
+        r.name,
+        add(r, '', () => {
+          readout.innerHTML = `
+            <div class="icons">${r.icons}</div>
+            <h3>${r.name}</h3>
+            <p class="verdict">${r.verdict}</p>
+            <dl>
+              ${lens === 'score'
+                ? `<dt>Ranked</dt><dd>No — rated 1/5 for eating without meat.</dd><dt>Menu</dt><dd>${r.meat}</dd>`
+                : `<dt>Here</dt><dd>${lensLine(r, lens)}</dd><dt>But</dt><dd>Not ranked: rated 1/5 for eating without meat.</dd>`}
+            </dl>`;
+        }),
+      ]),
+    );
+
+    const shapes = new Map(
+      ranked.map((r) => [r.code, add(r, '', () => (readout.innerHTML = detail(r, lens)))]),
+    );
+
+    const paint = () => {
+      shapes.forEach((shape, code) => {
+        const region = ranked.find((r) => r.code === code);
+        shape.style.fill = shade(lensValue(region, lens));
+      });
+      ruledOut.forEach((shape, name) => {
+        const region = DATA.inedible.find((r) => r.name === name);
+        const out = lens === 'score';
+        shape.classList.toggle('out', out);
+        shape.style.fill = out ? '' : shade(region.parts[lens]);
+      });
+    };
+
+    slide.querySelectorAll('.lens').forEach((button) => {
+      button.addEventListener('click', () => {
+        lens = button.dataset.lens;
+        slide.querySelectorAll('.lens').forEach((b) => b.setAttribute('aria-pressed', String(b === button)));
+        paint();
+        readout.innerHTML = rest;
+      });
+    });
+
+    paint();
+    maps.push({ shapes, readout, lens: () => lens, rest });
+  }
+
+  document.querySelectorAll('[data-map]').forEach(buildMap);
+
+  /* A locator map for the cards slides: everything muted, only the
+     relevant areas picked out. No lens, no hover readout — just where
+     they are. */
+  function buildFocusMap(svg, highlight) {
+    svg.setAttribute('viewBox', DATA.viewBox);
+    const add = (region, cls) => {
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', region.path);
+      path.setAttribute('class', cls);
+      const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+      title.textContent = region.name;
+      path.appendChild(title);
+      svg.appendChild(path);
+    };
+    DATA.context.forEach((r) => add(r, 'region context'));
+    [...ranked, ...DATA.inedible].forEach((r) => {
+      if (!highlight.includes(r)) add(r, 'region');
+    });
+    highlight.forEach((r) => add(r, 'region pick'));
+  }
+
+  document.querySelectorAll('[data-mini-map]').forEach((svg) => {
+    const kind = svg.dataset.miniMap;
+    const highlight = kind === 'top' ? ranked.slice(0, 3) : DATA.inedible;
+    buildFocusMap(svg, highlight);
+    svg.querySelectorAll('.pick').forEach((p) => p.classList.add(kind === 'top' ? 'good' : 'bad'));
+  });
+
+  /* --- bars --- */
+
+  const widest = Math.max(...ranked.map((r) => r.merit));
+  const last = maps[maps.length - 1];
+
+  function bar(region, showTax) {
+    const row = document.createElement('div');
+    row.className = 'bar-row';
+    const lost = region.merit - region.score;
+    row.innerHTML = `
+      <div class="name">${region.name}<small>${region.wines} DO · ${region.drizzle} wet days</small></div>
+      <div class="track">
+        ${showTax ? `<div class="merit" style="width:${(region.merit / widest) * 100}%"></div>` : ''}
+        <div class="actual" style="width:${(region.score / widest) * 100}%;background:${shade(region.score)}"></div>
+        ${showTax && lost > 2 ? `<div class="tax" style="left:${(region.score / widest) * 100}%">−${lost}</div>` : ''}
+      </div>
+      <div class="score">${region.score}</div>`;
+    row.tabIndex = 0;
+    const show = () => {
+      last.readout.innerHTML = detail(region, 'score');
+      last.shapes.forEach((shape) => shape.classList.remove('lit'));
+      last.shapes.get(region.code).classList.add('lit');
+    };
+    row.addEventListener('mouseenter', show);
+    row.addEventListener('focus', show);
+    return row;
+  }
+
+  [...ranked]
+    .sort((a, b) => b.merit - a.merit)
+    .slice(0, 8)
+    .forEach((r) => document.getElementById('taxBars').appendChild(bar(r, true)));
+  ranked.forEach((r) => document.getElementById('rankBars').appendChild(bar(r, false)));
+
+  /* --- cards --- */
+
+  const ordinal = ['First', 'Second', 'Third'];
+  document.getElementById('topCards').innerHTML = ranked
+    .slice(0, 3)
+    .map(
+      (region, i) => `
+      <article class="card">
+        <div class="rank">${ordinal[i]} · ${region.score} / 100</div>
+        <div class="icons">${region.icons}</div>
+        <h3>${region.name}</h3>
+        <p>${region.verdict}</p>
+        <p class="muted"><b>Ask for</b> ${region.veg}</p>
+        <p class="muted"><b>Drink</b> ${region.wineNames.length ? region.wineNames.join(', ') : 'whatever the next region sends over'}</p>
+        <div class="stats">
+          <span class="chip"><b>${region.drizzle}</b> wet days</span>
+          <span class="chip"><b>${region.downpours}</b> downpours</span>
+          <span class="chip"><b>${region.wines}</b> DO</span>
+          <span class="chip">Brits <b>${region.brits}</b>/5</span>
+        </div>
+      </article>`,
+    )
+    .join('');
+
+  const outFeatured = ['Asturias', 'León', 'Cáceres', 'Região de Coimbra']
+    .map((name) => DATA.inedible.find((r) => r.name === name))
+    .filter(Boolean);
+  const outRestCount = DATA.inedible.length - outFeatured.length;
+
+  document.getElementById('outCards').innerHTML =
+    outFeatured
+      .map(
+        (region) => `
+      <article class="card">
+        <div class="rank" style="color:var(--poor)">Not ranked</div>
+        <div class="icons">${region.icons}</div>
+        <h3>${region.name}</h3>
+        <p>${region.verdict}</p>
+        <p class="muted"><b>On the menu</b> ${region.meat}</p>
+        <div class="stats">
+          <span class="chip"><b>${region.drizzle}</b> wet days</span>
+          <span class="chip"><b>${region.wines}</b> DO</span>
+        </div>
+      </article>`,
+      )
+      .join('') +
+    (outRestCount > 0
+      ? `
+      <article class="card more">
+        <div class="rank" style="color:var(--poor)">Not ranked</div>
+        <h3>${outRestCount} more, same story</h3>
+        <p class="muted">The rest of Castilla y León and Extremadura, the rest of central
+          Portugal, and the Azores — all ruled out on the same test.</p>
+      </article>`
+      : '');
+
+  /* --- slides --- */
+
+  const slides = [...document.querySelectorAll('[data-slide]')];
+  const dots = document.getElementById('dots');
+  const counter = document.getElementById('counter');
+  const prev = document.getElementById('prev');
+  const next = document.getElementById('next');
+  let current = 0;
+
+  slides.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'dot';
+    dot.type = 'button';
+    dot.setAttribute('role', 'tab');
+    dot.setAttribute('aria-label', `Slide ${i + 1}`);
+    dot.addEventListener('click', () => show(i));
+    dots.appendChild(dot);
+  });
+
+  function show(index) {
+    current = Math.max(0, Math.min(slides.length - 1, index));
+    slides.forEach((slide, i) => slide.classList.toggle('on', i === current));
+    [...dots.children].forEach((dot, i) => dot.setAttribute('aria-current', String(i === current)));
+    counter.textContent = `${current + 1} / ${slides.length}`;
+    prev.disabled = current === 0;
+    next.disabled = current === slides.length - 1;
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  prev.addEventListener('click', () => show(current - 1));
+  next.addEventListener('click', () => show(current + 1));
+  document.addEventListener('keydown', (event) => {
+    if (event.target.matches('input, textarea')) return;
+    if (event.key === 'ArrowRight' || event.key === 'PageDown') show(current + 1);
+    if (event.key === 'ArrowLeft' || event.key === 'PageUp') show(current - 1);
+  });
+
+  show(0);
+</script>

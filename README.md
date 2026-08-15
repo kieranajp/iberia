@@ -137,6 +137,21 @@ LAU boundaries. Tiny Urbezo uses an explicitly approximate 232-hectare footprint
 uses IVV's 12 official mainland wine-region polygons (2023); these are the broad regions,
 not a claim to show every overlapping Portuguese DOP boundary.
 
+## The presentation
+
+`presentation/` holds a deck that scores every province on four questions — food
+without meat, wine, persistent rain, and British tourists — and argues its way to a
+shortlist. It carries its data inline, including the region outlines as SVG paths,
+because a published artifact cannot fetch anything.
+
+```sh
+npm run deck        # scores the provinces and assembles .cache/deck.html
+```
+
+`.cache/deck-preview.html` is the same page wrapped in a document, for opening
+locally. `scripts/build-shortlist.mjs` is where the weights live, stated at the top
+so the ranking can be argued with.
+
 ## Commands
 
 | Command | What it does |
@@ -149,3 +164,4 @@ not a claim to show every overlapping Portuguese DOP boundary.
 | `npm run data` | Rebuilds every dataset |
 | `npm run data:restore` | Pulls the datasets from the latest release |
 | `npm run release` | Checks, builds and publishes the site and the data, which deploys it |
+| `npm run deck` | Rebuilds the presentation from the current data |
