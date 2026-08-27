@@ -8,6 +8,7 @@
     SymbolLayer,
     Popup,
     Image,
+    ImageLoader,
     getMapContext,
   } from 'svelte-maplibre-gl';
   import type { FeatureCollection } from 'geojson';
@@ -36,7 +37,17 @@
   const icon = $derived(def.render.type === 'symbol' ? def.render.icon : undefined);
   const iconId = $derived(icon ? `${def.id}-icon` : undefined);
   const iconImage = $derived(icon ? emojiImage(icon) : undefined);
-  const layout = $derived(buildLayout(def.render, iconId));
+  const imageIcons = $derived(
+    def.render.type === 'symbol' && def.render.icons
+      ? Object.fromEntries(
+          Object.entries(def.render.icons.images).map(([key, url]) => [
+            `${def.id}-${key}`,
+            [url, { pixelRatio: 2 }] as [string, { pixelRatio: number }],
+          ]),
+        )
+      : null,
+  );
+  const layout = $derived(buildLayout(def.render, iconId ?? def.id));
 
   const fillPattern = $derived(
     combineFills && def.render.type === 'fill' ? buildFillPattern(def.render, def.id) : null,
@@ -138,37 +149,47 @@
   <Image id={pattern.id} image={pattern.image} options={{ pixelRatio: 2 }} />
 {/each}
 
-{#if data}
-  <GeoJSONSource id={def.id} {data} attribution={def.attribution}>
-    {#if fillPattern}
-      <FillLayer
-        id={layerId}
-        paint={fillPattern.paint as never}
-        {beforeId}
-        minzoom={def.render.minzoom}
-        maxzoom={def.render.maxzoom}
-        filter={def.render.filter}
-        {onclick}
-        {onmousemove}
-        onmouseenter={cursor(hovers ? 'default' : 'pointer')}
-        {onmouseleave}
-      />
-    {:else}
-      <Layer
-        id={layerId}
-        paint={paint as never}
-        layout={layout as never}
-        {beforeId}
-        minzoom={def.render.minzoom}
-        maxzoom={def.render.maxzoom}
-        filter={def.render.filter}
-        {onclick}
-        {onmousemove}
-        onmouseenter={cursor(hovers ? 'default' : 'pointer')}
-        {onmouseleave}
-      />
-    {/if}
-  </GeoJSONSource>
+{#snippet dataLayer()}
+  {#if data}
+    <GeoJSONSource id={def.id} {data} attribution={def.attribution}>
+      {#if fillPattern}
+        <FillLayer
+          id={layerId}
+          paint={fillPattern.paint as never}
+          {beforeId}
+          minzoom={def.render.minzoom}
+          maxzoom={def.render.maxzoom}
+          filter={def.render.filter}
+          {onclick}
+          {onmousemove}
+          onmouseenter={cursor(hovers ? 'default' : 'pointer')}
+          {onmouseleave}
+        />
+      {:else}
+        <Layer
+          id={layerId}
+          paint={paint as never}
+          layout={layout as never}
+          {beforeId}
+          minzoom={def.render.minzoom}
+          maxzoom={def.render.maxzoom}
+          filter={def.render.filter}
+          {onclick}
+          {onmousemove}
+          onmouseenter={cursor(hovers ? 'default' : 'pointer')}
+          {onmouseleave}
+        />
+      {/if}
+    </GeoJSONSource>
+  {/if}
+{/snippet}
+
+{#if imageIcons}
+  <ImageLoader images={imageIcons}>
+    {@render dataLayer()}
+  </ImageLoader>
+{:else}
+  {@render dataLayer()}
 {/if}
 
 {#if selected}

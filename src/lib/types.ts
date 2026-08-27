@@ -71,6 +71,15 @@ export interface SymbolRender extends RenderBase {
    * basemap's glyph fonts have no emoji in them.
    */
   icon?: string;
+  /**
+   * Feature-driven image markers. Keys are property values and values are image
+   * URLs, e.g. `{ property: 'brand', images: { mahou: '/data/logos/mahou.png' } }`.
+   * Images are loaded before the layer is drawn.
+   */
+  icons?: {
+    property: string;
+    images: Record<string, string>;
+  };
   /** How large the icon is drawn, in pixels. A number, or a scale. Default 22. */
   size?: Scale<number>;
   /** Nudge in screen pixels, so layers on the same places do not sit on top of each other. */

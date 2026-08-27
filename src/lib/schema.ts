@@ -38,6 +38,20 @@ export function validateLayer(def: Layer | undefined, origin = 'unknown'): strin
   if (render && 'radius' in render && !validScale(render.radius)) {
     fail('`render.radius` scale needs `property` and 2+ `stops`');
   }
+  if (render?.type === 'symbol' && render.icon && render.icons) {
+    fail('a symbol layer may use `render.icon` or `render.icons`, not both');
+  }
+  if (render?.type === 'symbol' && render.icons) {
+    if (!render.icons.property) fail('`render.icons` needs a feature `property`');
+    if (!Object.keys(render.icons.images ?? {}).length) {
+      fail('`render.icons` needs at least one image');
+    }
+    for (const [key, url] of Object.entries(render.icons.images ?? {})) {
+      if (typeof url !== 'string' || !url.startsWith('/')) {
+        fail(`render.icons.images[${JSON.stringify(key)}] must be an absolute path`);
+      }
+    }
+  }
 
   if (def.popup && !def.popup.title && !def.popup.fields?.length) {
     fail('`popup` needs a `title` property name or at least one entry in `fields`');

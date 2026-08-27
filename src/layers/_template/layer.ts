@@ -75,6 +75,9 @@ export default {
     //   type: 'symbol', icon: '🇩🇪', size: { property: 'german', stops: [[1, 11], [5, 30]] },
     //   offset: [9, -9],   // pixels, to keep layers off each other's markers
     // Size alone carries the value, so leave `colour` off those.
+    // Or map a feature property to local images (normalise them to 64×64):
+    //   type: 'symbol', size: 30,
+    //   icons: { property: 'brand', images: { local: '/data/logos/local.png' } },
 
     // Hide the layer outside this zoom range.
     minzoom: 0,

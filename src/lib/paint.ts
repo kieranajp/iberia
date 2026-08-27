@@ -222,7 +222,7 @@ export function buildPaint(render: Render): Record<string, unknown> {
         ...(render.heatmapColour ? { 'heatmap-color': render.heatmapColour } : {}),
       };
     case 'symbol':
-      return render.icon
+      return render.icon || render.icons
         ? {
             'icon-opacity': opacity ?? 1,
             ...(render.offset ? { 'icon-translate': render.offset } : {}),
@@ -242,9 +242,17 @@ const ICON_PIXELS = 32;
 export function buildLayout(render: Render, imageId?: string): Record<string, unknown> | undefined {
   if (render.type !== 'symbol') return undefined;
 
-  if (render.icon) {
+  if (render.icon || render.icons) {
+    const iconImage = render.icons
+      ? [
+          'match',
+          ['get', render.icons.property],
+          ...Object.keys(render.icons.images).flatMap((key) => [key, `${imageId}-${key}`]),
+          '',
+        ]
+      : imageId;
     return {
-      'icon-image': imageId,
+      'icon-image': iconImage,
       // `size` is given in pixels, but icon-size is a multiplier of the drawn image.
       'icon-size': ['/', scaleToExpression(render.size, 22), ICON_PIXELS],
       'icon-allow-overlap': true,

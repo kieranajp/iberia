@@ -64,6 +64,7 @@ for (const folder of folders) {
     def.render?.colour?.property,
     def.render?.radius?.property,
     def.render?.width?.property,
+    def.render?.icons?.property,
     def.popup?.title,
     ...(def.popup?.fields ?? []).map((f) => f.key),
   ].filter(Boolean);
@@ -74,6 +75,21 @@ for (const folder of folders) {
         `${path}: refers to property "${key}", which is not in the data. ` +
           `Available: ${[...keys].join(', ') || 'none'}`,
       );
+    }
+  }
+
+  if (def.render?.type === 'symbol' && def.render.icons) {
+    const property = def.render.icons.property;
+    const values = new Set(geojson.features.map((f) => f.properties?.[property]).filter(Boolean));
+    for (const value of values) {
+      const image = def.render.icons.images[value];
+      if (!image) {
+        problems.push(`${path}: no icon image is mapped for ${property}=${JSON.stringify(value)}`);
+        continue;
+      }
+      if (!existsSync(new URL(`.${image}`, publicDir))) {
+        problems.push(`${path}: no icon image at public${image}`);
+      }
     }
   }
 
