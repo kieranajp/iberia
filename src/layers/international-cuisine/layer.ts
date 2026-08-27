@@ -20,10 +20,9 @@ export default {
   popup: {
     title: 'title',
     fields: [
-      { key: 'easy', big: true },
-      { key: 'some', big: true },
-      { key: 'thin', big: true },
-      { key: 'key', label: 'Key' },
+      { key: 'easy', label: '🟢 Easy', big: true },
+      { key: 'some', label: '🟡 Some', big: true },
+      { key: 'thin', label: '🔎 Hunt', big: true },
       { key: 'breadth', label: 'Range' },
       { key: 'sample', label: 'OSM' },
     ],

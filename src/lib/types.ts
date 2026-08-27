@@ -104,7 +104,7 @@ export interface PopupField {
   key: string;
   label?: string;
   format?: FeatureValueFormatter;
-  /** Draw the value large and across the popup, with no label. For a row of emoji. */
+  /** Draw an emoji value large; with a label it stays in the popup grid, otherwise it spans it. */
   big?: boolean;
 }
 

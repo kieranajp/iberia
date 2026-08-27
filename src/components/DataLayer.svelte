@@ -206,7 +206,10 @@
     {/if}
     <dl>
       {#each fields as field}
-        {#if field.big}
+        {#if field.big && field.label}
+          <dt class="big-label">{field.label}</dt>
+          <dd class="big-row">{field.value ?? '—'}</dd>
+        {:else if field.big}
           <dd class="big">{field.value}</dd>
         {:else}
           <dt>{field.label}</dt>
@@ -252,6 +255,24 @@
     font-size: 22px;
     letter-spacing: 3px;
     line-height: 1.1;
+  }
+
+  dt.big-label {
+    display: flex;
+    align-items: center;
+    padding-right: 2px;
+    color: inherit;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  dd.big-row {
+    min-width: 0;
+    padding: 2px 0 4px 10px;
+    border-left: 1px solid var(--line);
+    font-size: 20px;
+    letter-spacing: 2px;
+    line-height: 1.2;
   }
 
   .compare {

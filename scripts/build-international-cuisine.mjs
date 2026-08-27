@@ -249,14 +249,14 @@ function classify(elements) {
 
   return {
     tagged: open.length,
-    easy: `🟢 ${icons(easy) || '—'}`,
-    some: `🟡 ${icons(some) || '—'}`,
+    easy: icons(easy) || '—',
+    some: icons(some) || '—',
     thin:
       open.length < 25
-        ? '🔎 sample too small'
+        ? 'Too little data'
         : thin.length === 0
-          ? '🔎 —'
-          : `🔎 ${icons(thinShown)}${thinExtra ? ` +${thinExtra}` : ''}`,
+          ? '—'
+          : `${icons(thinShown)}${thinExtra ? ` +${thinExtra}` : ''}`,
     breadth: `${easy.length + some.length}/${CUISINES.length} found twice+`,
   };
 }
@@ -300,7 +300,6 @@ for (const [index, city] of authored.cities.entries()) {
       some: result.some,
       thin: result.thin,
       breadth: result.breadth,
-      key: '🟢 4+ · 🟡 2–3 · 🔎 0–1 mapped',
       sample: `${result.tagged} tagged · ~${city.radius_km} km`,
     },
     geometry: { type: 'Point', coordinates: [city.lon, city.lat] },
