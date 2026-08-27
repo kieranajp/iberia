@@ -18,6 +18,7 @@ here: switch all four on and the country divides itself up in front of you.
 
 | Layer | What it shows | Source |
 | --- | --- | --- |
+| Winter light | Mean daily solar energy reaching the ground, December–February 2015–2024 | NASA POWER monthly solar data, native 1° grid |
 | Yearly rainfall | Mean annual precipitation, 2015–2024 | Open-Meteo Best Match historical weather, 0.5° grid |
 | Rainy days | Mean days/year with at least 1 mm, 2015–2024 | Same Open-Meteo rainfall grid |
 | Very heavy rain | Mean days/year with at least 20 mm, 2015–2024 | Same Open-Meteo rainfall grid |
@@ -33,6 +34,11 @@ and thirty-first by pressure, because dividing by 2.6 million residents hides a 
 
 Numeric layers carry benchmarks — familiar places marked on the legend — so 1,600 mm reads
 as "about the same as Keswick" and 114 nights per resident reads as "Lanzarote".
+
+Winter light uses NASA POWER's monthly mean of daily all-sky shortwave radiation — direct and
+diffuse solar energy reaching a horizontal surface — rather than raw sunrise-to-sunset time.
+That lets cloud and latitude both count. It is a proxy for outdoor natural light, with Berlin
+and Derry as legend benchmarks, not a clinical SAD risk score.
 
 ## Running it
 
@@ -61,6 +67,8 @@ npm run data:toll-roads     # a few minutes; queries OpenStreetMap through Overp
 npm run data:rainfall-benchmarks # refreshes the four legend references in seconds
 npm run data:rainfall      # an hour or more: Open-Meteo rate-limits hard, and the
                            # script waits out each window rather than giving up
+npm run data:winter-light-benchmarks # refreshes Berlin and Derry in seconds
+npm run data:winter-light  # winter solar energy/daylight grid; responses are cached
 ```
 
 Every response is cached, so a second run costs nothing. Until the data is there, those
@@ -163,5 +171,6 @@ so the ranking can be argued with.
 | `npm run new-layer -- <id>` | Scaffolds a layer |
 | `npm run data` | Rebuilds every dataset |
 | `npm run data:restore` | Pulls the datasets from the latest release |
+| `npm run data:winter-light` | Rebuilds the winter-light grid from NASA POWER |
 | `npm run release` | Checks, builds and publishes the site and the data, which deploys it |
 | `npm run deck` | Rebuilds the presentation from the current data |

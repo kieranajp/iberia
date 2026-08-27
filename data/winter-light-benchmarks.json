@@ -1,0 +1,35 @@
+{
+  "metadata": {
+    "title": "Winter-light legend benchmarks",
+    "source": "NASA POWER Monthly and Annual API, SYN1DEG",
+    "source_url": "https://power.larc.nasa.gov/docs/services/api/temporal/monthly/",
+    "endpoint": "https://power.larc.nasa.gov/api/temporal/monthly/point",
+    "period": "2015-01-01 to 2024-12-31",
+    "months": [
+      "December",
+      "January",
+      "February"
+    ],
+    "parameter": "ALLSKY_SFC_SW_DWN",
+    "method": "Query the stated town-centre coordinates and weight the NASA POWER monthly mean all-sky surface irradiance by the days in each December, January and February. Convert kWh/m²/day to MJ/m²/day and round to two decimals. Calculate astronomical daylight duration from latitude.",
+    "generated": "2026-08-27"
+  },
+  "locations": [
+    {
+      "label": "Derry",
+      "latitude": 54.998,
+      "longitude": -7.309,
+      "source_elevation_m": 108.67,
+      "light_mj": 2.74,
+      "daylight_h": 8.22
+    },
+    {
+      "label": "Berlin",
+      "latitude": 52.52,
+      "longitude": 13.405,
+      "source_elevation_m": 48.98,
+      "light_mj": 2.97,
+      "daylight_h": 8.58
+    }
+  ]
+}
